@@ -33,7 +33,7 @@ for t in txts:
     p.contents.append((t, p.options()))
     if p.rows((width,)) > height:
         p = urwid.AttrMap(p, None, focus_map='reversed') 
-        p = urwid.Padding(p, width=('relative', 30))
+        #p = urwid.Padding(p, width=('relative', 30))
         piles.append(p)
         p = urwid.Pile([])
 
@@ -47,10 +47,10 @@ palette = [
     ('focus options', 'black', 'light gray'),
     ('selected', 'white', 'dark blue')]
 
-piles = urwid.ListBox(urwid.SimpleFocusListWalker(piles))
-cols = piles
-fill = cols
-#cols = urwid.Columns(piles, focus_column=2,   dividechars=10, min_width=width)
+#piles = urwid.ListBox(urwid.SimpleFocusListWalker(piles))
+#cols = piles
+#fill = cols
+cols = urwid.Columns(piles, focus_column=2,   dividechars=10, min_width=width)
 #cols.box_columns.extend(cols.widget_list)
 
 def pile_height(p):
@@ -58,7 +58,7 @@ def pile_height(p):
 
 
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
-#fill = urwid.Filler(cols, 'top')
+fill = urwid.Filler(cols, 'top')
 loop = urwid.MainLoop(fill, palette, unhandled_input=show_or_exit)
 
 loop.run()
