@@ -12,8 +12,9 @@ fname = '/home/pi/cur/das.txt'
 with open(fname) as f:
     text = f.read()
 
-#txt = urwid.Text(text)
+txt = urwid.Text(text)
 txts = [urwid.Text(t) for t in text.split('\n')]
+txts = [urwid.LineBox(t) for t in txts]
 pile  = urwid.Pile(txts)
 
 # what I really want here is a transpose of the GridFlow widget
@@ -25,31 +26,40 @@ pile  = urwid.Pile(txts)
 #
 
 width=40
-height=60
+height=40
 piles = []
 p = urwid.Pile([])
 for t in txts:
     p.contents.append((t, p.options()))
     if p.rows((width,)) > height:
+        p = urwid.AttrMap(p, None, focus_map='reversed') 
+        p = urwid.Padding(p, width=('relative', 30))
         piles.append(p)
         p = urwid.Pile([])
 
+palette = [
+    (None,  'light gray', 'white'),
+    ('heading', 'black', 'light gray'),
+    ('line', 'black', 'light gray'),
+    ('options', 'dark gray', 'black'),
+    ('focus heading', 'white', 'dark red'),
+    ('focus line', 'black', 'dark red'),
+    ('focus options', 'black', 'light gray'),
+    ('selected', 'white', 'dark blue')]
 
-cols = urwid.Columns(piles, dividechars=10, min_width=width)
-
-# On second thought, this looks like too much internals. All we need to do is
-# maintain the window height, and how far down a pile goes. If it's too high,
-# go to the next column. The thing is, the GridFlow implementation makes all
-# boxes in a row the same height, and that's not what I'm looking for.
-#
+piles = urwid.ListBox(urwid.SimpleFocusListWalker(piles))
+cols = piles
+fill = cols
+#cols = urwid.Columns(piles, focus_column=2,   dividechars=10, min_width=width)
+#cols.box_columns.extend(cols.widget_list)
 
 def pile_height(p):
     pass
 
 
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
-fill = urwid.Filler(cols, 'top')
-loop = urwid.MainLoop(fill, unhandled_input=show_or_exit)
+#fill = urwid.Filler(cols, 'top')
+loop = urwid.MainLoop(fill, palette, unhandled_input=show_or_exit)
 
 loop.run()
 
