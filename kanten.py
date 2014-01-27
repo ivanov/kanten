@@ -105,6 +105,9 @@ for t in txts[:]:
         # start the next column
         p = urwid.Pile([])
 
+# all done, don't forget the last pile which we haven't added to the list yet
+piles.append(p)
+
 #palette = [
 #    (None,  'light gray', 'white'),
 #    ('heading', 'black', 'light gray'),

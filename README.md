@@ -22,7 +22,8 @@ TODO
 [x] 'G' to go to the end
 [x] split boxes so that they partially fit
 [x] clip off lines that are too long even in one go
-[ ] last line of text being cut-off
+[x] last line of text being cut-off
+[ ] fix formatting (spacing) for cells which were cut
 [ ] wrap-around optionally
 [ ] search using / (to seek around)
 [x] going forward 4 times and then going back 4 doesn't work :(
