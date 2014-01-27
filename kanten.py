@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import urwid
 from urwid import Padding, Text, Pile
 import IPython
