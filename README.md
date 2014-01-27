@@ -30,6 +30,7 @@ TODO
     - boxadapter?
     - options('given', width) ?
     - use padding!!
+[ ] (alignment) 'the less is' line currently getting screwed up :\
 [ ] (refactor) start off with one Padding(text) and keep splitting in
     - don't pre-split
     - such an approach will be a reasonable way to go with searching, anyway
