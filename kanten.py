@@ -1,7 +1,7 @@
 import urwid
 import IPython
 import pudb
-DEBUG = True
+DEBUG = False
 
 off_screen = []
 def show_or_exit(key):
@@ -40,60 +40,70 @@ if DEBUG:
     txts = [urwid.LineBox(t) for t in txts]
 pile  = urwid.Pile(txts)
 
-# what I really want here is a transpose of the GridFlow widget
-# GridFlow widgets arrange their cells like so:
-#
-# [  cell[0]  cell[3] ]
-# [  cell[1]  cell[4] ]
-# [  cell[2]  cell[5] ]
-#
-
 width=40
 height=10
+
+def trim(t, d, w=width):
+    """Trim the text in `t` to only `d` lines, assuming a width of `w`"""
+    if DEBUG:
+        pre_rendered_text = t.original_widget.text
+        lines = t.original_widget.render((width,)).text
+        t.original_widget.set_text(''.join(lines[:d]))
+        # now make a new text widget to hold the remaining lines. It will
+        # be added to the next pile, which we will also initialize here
+        if d >= len(lines):
+            # happens because we clip the text, and not the linebox 
+            next_start = 0
+        else:
+            next_start = pre_rendered_text.find(lines[d].strip())
+        return urwid.LineBox(urwid.Text(pre_rendered_text[next_start:]))
+
+    print "trimming to '%d' lines", d
+    pre_rendered_text = t.text
+    lines = t.render((w,)).text
+    t.set_text(''.join(lines[:d]))
+    # now make a new text widget to hold the remaining lines. It will
+    # be added to the next pile, which we will also initialize here
+    next_start = pre_rendered_text.find(lines[d].strip())
+    return urwid.Text(pre_rendered_text[next_start:])
+
+def h(e):
+    return e.rows((width,))
+
 piles = []
 p = urwid.Pile([])
-for t in txts:
-    t_size = t.rows((width,))
-    p_size = p.rows((width,))
-    if p_size >= height:
-        # shortcut this one, just add a new pile and toss ourselves in there
-        piles.append(p)
-        # start the next column
-        p = urwid.Pile([])
-        p_size = p.rows((width,))
-    if t_size + p_size > height:
-        # need to cut t_size so that it fits within height
-        #p = urwid.AttrMap(p, None, focus_map='reversed') 
-        #p = urwid.Padding(p, width=('relative', 30))
-        d = height - p_size
-        t0 = t
-        if DEBUG:
-            pre_rendered_text = t.original_widget.text
-            lines = t.original_widget.render((width,)).text
-            t.original_widget.set_text(''.join(lines[:d]))
-            # now make a new text widget to hold the remaining lines. It will
-            # be added to the next pile, which we will also initialize here
-            if d >= len(lines):
-                # happens because we clip the text, and not the linebox 
-                next_start = 0
-            else:
-                next_start = pre_rendered_text.find(lines[d].strip())
-            t = urwid.LineBox(urwid.Text(pre_rendered_text[next_start:]))
-        else:
-            pre_rendered_text = t.text
-            lines = t.render((width,)).text
-            t.set_text(''.join(lines[:d]))
-            # now make a new text widget to hold the remaining lines. It will
-            # be added to the next pile, which we will also initialize here
-            next_start = pre_rendered_text.find(lines[d].strip())
-            t = urwid.Text(pre_rendered_text[next_start:])
-        
-        p.contents.append((t0, p.options()))
-        
-        piles.append(p)
-        # start the next column
-        p = urwid.Pile([])
+for t in txts[:]:
+    if 'she would not qualify' in t.text:
+        pu.db
     p.contents.append((t, p.options()))
+    t_size = t.rows((width,))
+    if piles:
+        #pu.db
+        aaa = h(piles[-1])
+        if aaa > height:
+            pu.db
+    while h(p) > height:
+        # Add a new pile, and send the trimmings in there
+        piles.append(p)
+        d = h(t) - (h(p) - height)
+
+        if d <= 0: pu.db
+        # start the next column
+        p = urwid.Pile([])
+        print "t is ", h(t)
+        t_extra = trim(t, d, width)
+        print "now we got ", piles[-1].rows((width,))
+        print "t_extra is", h(t_extra)
+        p.contents.append((t_extra, p.options()))
+
+
+    #if piles and h(piles[-1]) > height:
+    #    # ACK!
+    #    break
+    if h(p) == height:
+        piles.append(p)
+        # start the next column
+        p = urwid.Pile([])
 
 #palette = [
 #    (None,  'light gray', 'white'),
@@ -123,6 +133,11 @@ fill = urwid.Filler(cols, 'top')
 loop = urwid.MainLoop(fill, unhandled_input=show_or_exit)
 
 loop.run()
+
+for p in piles:
+    print h(p)
+    for c in p.contents:
+        print "\t" , h(c[0])
 
 #IPython.embed()
 #pu.db
