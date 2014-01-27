@@ -6,27 +6,32 @@ import pudb
 DEBUG = False
 
 off_screen = []
+
+k_back = ('b', 'B', 'w')
+k_next = (' ', 'f', 'z')
+k_top = ('g', '<', 'p')
+k_end = ('G', '>')
 def show_or_exit(key):
     global off_screen
     if key in ('q', 'Q'):
         raise urwid.ExitMainLoop()
-    elif key in ('b', 'B'):
+    elif key in k_back:
         #off_screen.append(cols.contents.pop())
         if off_screen:
             new_first = off_screen.pop()
             cols.contents.insert(0, new_first)
             cols.focus_position=0
-    elif key in ('g'):
+    elif key in k_top:
         # take it from the top
         cols.contents = off_screen + cols.contents
         off_screen = []
         cols.focus_position=0
-    elif key in ('G'):
+    elif key in k_end:
         # this is the end, my friends, the end, the end.
         off_screen.extend(cols.contents)
         # XXX: backfill here properly - fill the hole screen
         cols.contents = [ off_screen.pop() ]
-    elif key in (' '):
+    elif key in k_next:
         if cols.contents:
             off_screen.append(cols.contents.pop(0))
     pbar.set_completion(len(off_screen))
