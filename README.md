@@ -21,7 +21,8 @@ TODO
 [x] 'g' to go to the beginning 
 [x] 'G' to go to the end
 [x] split boxes so that they partially fit
-[ ] clip off lines that are too long even in one go
+[x] clip off lines that are too long even in one go
+[ ] last line of text being cut-off
 [ ] wrap-around optionally
 [ ] search using / (to seek around)
 [x] going forward 4 times and then going back 4 doesn't work :(

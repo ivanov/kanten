@@ -134,10 +134,11 @@ loop = urwid.MainLoop(fill, unhandled_input=show_or_exit)
 
 loop.run()
 
-for p in piles:
-    print h(p)
-    for c in p.contents:
-        print "\t" , h(c[0])
+if DEBUG:
+    for p in piles:
+        print h(p)
+        for c in p.contents:
+            print "\t" , h(c[0])
 
 #IPython.embed()
 #pu.db
