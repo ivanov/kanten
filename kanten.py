@@ -1,7 +1,8 @@
 import urwid
+from urwid import Padding, Text, Pile
 import IPython
 import pudb
-DEBUG = True
+DEBUG = False
 
 off_screen = []
 def show_or_exit(key):
@@ -25,6 +26,7 @@ def show_or_exit(key):
     elif key in (' '):
         if cols.contents:
             off_screen.append(cols.contents.pop(0))
+    pbar.set_completion(len(off_screen))
     #txt.set_text(repr(key))
 
 fname = '/home/pi/fortunes/antoine_de_saintexupery'
@@ -33,66 +35,67 @@ fname = '/home/pi/cur/eb.txt'
 with open(fname) as f:
     text = f.read()
 
-txt = urwid.Text(text)
-txts = [urwid.Text(t) for t in text.split('\n')]
-if DEBUG:
-    # my brain finds it easier to deal with boxes
-    txts = [urwid.LineBox(t) for t in txts]
-pile  = urwid.Pile(txts)
 
 width=40
-height=40
+height=50
+def make_text(t):
+    result = Padding(Text(t), ('relative', 100), width)
+    if DEBUG:
+        return urwid.LineBox(result)
+    return result
+
+#txt = urwid.Text(text)
+txts = [make_text(t) for t in text.split('\n')]
+#if DEBUG:
+#    # my brain finds it easier to deal with boxes
+#    txts = [urwid.LineBox(t) for t in txts]
+pile  = Pile(txts)
+
 
 def trim(t, d, w=width):
     """Trim the text in `t` to only `d` lines, assuming a width of `w`"""
     if DEBUG:
-        pre_rendered_text = t.original_widget.text
-        lines = t.original_widget.render((width-2,)).text
+        pre_rendered_text = t.original_widget.original_widget.text
+        lines = t.original_widget.original_widget.render((width-2,)).text
         # now make a new text widget to hold the remaining lines. It will
         # be added to the next pile, which we will also initialize here
         if d >= len(lines):
-            # happens because we clip the text, and not the linebox 
+            # happens because we clip the text, and not the linebox
             next_start = 0
         else:
             next_start = pre_rendered_text.find(lines[d].strip())
-        t.original_widget.set_text(pre_rendered_text[:next_start])
-        return urwid.LineBox(urwid.Text(pre_rendered_text[next_start:]))
+        t.original_widget.original_widget.set_text(pre_rendered_text[:next_start])
+        return make_text(pre_rendered_text[next_start:])
 
-    print "trimming to '%d' lines", d
-    pre_rendered_text = t.text
+    pre_rendered_text = t.original_widget.text
     lines = t.render((w,)).text
 
     # now make a new text widget to hold the remaining lines. It will
     # be added to the next pile, which we will also initialize here
     next_start = pre_rendered_text.find(lines[d].strip())
-    t.set_text(pre_rendered_text[:next_start])
-    return urwid.Text(pre_rendered_text[next_start:])
+    t.original_widget.set_text(pre_rendered_text[:next_start])
+    return make_text(pre_rendered_text[next_start:])
 
 def h(e):
     return e.rows((width,))
 
 piles = []
-p = urwid.Pile([])
+p = Pile([])
 for t in txts[:]:
     #if 'What emerges' in t.text: pu.db
     p.contents.append((t, p.options()))
     t_size = t.rows((width,))
-    if piles:
-        #pu.db
-        aaa = h(piles[-1])
-        #if aaa > height: pu.db
+    #if piles and h(piles[-1]) > height: pu.db
     while h(p) > height:
         # Add a new pile, and send the trimmings in there
         piles.append(p)
         d = h(t) - (h(p) - height)
-
+        
         #if d <= 0: pu.db
+        
         # start the next column
-        p_new = urwid.Pile([])
-        print "t is ", h(t)
+        p_new = Pile([])
         t_extra = trim(t, d, width)
-        print "now we got ", p.rows((width,))
-        print "t_extra is", h(t_extra)
         p_new.contents.append((t_extra, p.options()))
         p = p_new
         t = t_extra
@@ -104,20 +107,22 @@ for t in txts[:]:
     if h(p) == height:
         piles.append(p)
         # start the next column
-        p = urwid.Pile([])
+        p = Pile([])
 
 # all done, don't forget the last pile which we haven't added to the list yet
 piles.append(p)
 
-#palette = [
-#    (None,  'light gray', 'white'),
-#    ('heading', 'black', 'light gray'),
-#    ('line', 'black', 'light gray'),
-#    ('options', 'dark gray', 'black'),
-#    ('focus heading', 'white', 'dark red'),
-#    ('focus line', 'black', 'dark red'),
-#    ('focus options', 'black', 'light gray'),
-#    ('selected', 'white', 'dark blue')]
+palette = [
+    (None,  'light gray', 'black'),
+    ('heading', 'black', 'light gray'),
+    ('line', 'black', 'light gray'),
+    ('options', 'dark gray', 'black'),
+    ('focus heading', 'white', 'dark red'),
+    ('focus line', 'black', 'dark red'),
+    ('focus options', 'black', 'light gray'),
+    ('pg normal',    'white',      'black', 'standout'),
+    ('pg complete',  'white',      'dark magenta'),
+    ('selected', 'white', 'dark blue')]
 
 #piles = urwid.ListBox(urwid.SimpleFocusListWalker(piles))
 #cols = piles
@@ -134,7 +139,10 @@ cols = urwid.Columns(piles, dividechars=1, min_width=width)
 
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
 fill = urwid.Filler(cols, 'top', top=5)
-loop = urwid.MainLoop(fill, unhandled_input=show_or_exit)
+pbar = urwid.ProgressBar('pg normal', 'pg complete', 0, len(cols.contents)-1)
+p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
+all = Pile([ fill, (2, p) ] )
+loop = urwid.MainLoop(all, palette, unhandled_input=show_or_exit)
 
 loop.run()
 
