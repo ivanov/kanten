@@ -73,28 +73,28 @@ def h(e):
 piles = []
 p = urwid.Pile([])
 for t in txts[:]:
-    if 'she would not qualify' in t.text:
-        pu.db
+    #if 'she would not qualify' in t.text: pu.db
     p.contents.append((t, p.options()))
     t_size = t.rows((width,))
     if piles:
         #pu.db
         aaa = h(piles[-1])
-        if aaa > height:
-            pu.db
+        #if aaa > height: pu.db
     while h(p) > height:
         # Add a new pile, and send the trimmings in there
         piles.append(p)
         d = h(t) - (h(p) - height)
 
-        if d <= 0: pu.db
+        #if d <= 0: pu.db
         # start the next column
-        p = urwid.Pile([])
+        p_new = urwid.Pile([])
         print "t is ", h(t)
         t_extra = trim(t, d, width)
-        print "now we got ", piles[-1].rows((width,))
+        print "now we got ", p.rows((width,))
         print "t_extra is", h(t_extra)
-        p.contents.append((t_extra, p.options()))
+        p_new.contents.append((t_extra, p.options()))
+        p = p_new
+        t = t_extra
 
 
     #if piles and h(piles[-1]) > height:
