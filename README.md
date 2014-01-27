@@ -11,8 +11,21 @@ unix pager replacement (more and less) that is not limited to 80 columns.
 TODO
 ----
 [ ] horizontal progress bar indicator
-[ ] space bar should move one column over (or whole screen?)
+[x] space bar should move one column over (or whole screen?)
 [ ] reading from stdin
 [ ] configurable number of columns
 [ ] reflow of text
 [ ] (maybe) reading cursor (like dictator?)
+[x] 'g' to go to the beginning 
+[x] 'G' to go to the end
+[x] split boxes so that they partially fit
+[ ] clip off lines that are too long even in one go
+[ ] wrap-around optionally
+[ ] search using / (to seek around)
+[x] going forward 4 times and then going back 4 doesn't work :(
+    maybe related:
+        File "/usr/lib/python2.7/dist-packages/urwid/widget.py", line 142, in cached_render validate_size(self, size, canv)
+        File "/usr/lib/python2.7/dist-packages/urwid/widget.py", line 112, in validate_size canv.rows(), size))
+        urwid.widget.WidgetError: Widget <Filler box widget <Columns box/flow widget> valign='top'> rendered (193 x 45) canvas when passed size (193, 51
+    [ ] (maybe) try cache invalidation?
+    [x] [cols.focus_position=0 seems to have done the trick!
