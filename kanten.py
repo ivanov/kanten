@@ -7,8 +7,8 @@ DEBUG = False
 
 off_screen = []
 
-k_back = ('b', 'B', 'w')
-k_next = (' ', 'f', 'z')
+k_next = (' ', 'f', 'z', 'j')
+k_back = ('b', 'B', 'w', 'k')
 k_top = ('g', '<', 'p')
 k_end = ('G', '>')
 def show_or_exit(key):
