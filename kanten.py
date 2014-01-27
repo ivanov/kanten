@@ -7,6 +7,7 @@ DEBUG = False
 
 off_screen = []
 def show_or_exit(key):
+    global off_screen
     if key in ('q', 'Q'):
         raise urwid.ExitMainLoop()
     elif key in ('b', 'B'):
@@ -18,6 +19,7 @@ def show_or_exit(key):
     elif key in ('g'):
         # take it from the top
         cols.contents = off_screen + cols.contents
+        off_screen = []
         cols.focus_position=0
     elif key in ('G'):
         # this is the end, my friends, the end, the end.
@@ -31,8 +33,8 @@ def show_or_exit(key):
     #txt.set_text(repr(key))
 
 fname = '/home/pi/fortunes/antoine_de_saintexupery'
-fname = '/home/pi/cur/das.txt'
 fname = '/home/pi/cur/eb.txt'
+fname = '/home/pi/cur/das.txt'
 with open(fname) as f:
     text = f.read()
 
@@ -139,7 +141,7 @@ cols = urwid.Columns(piles, dividechars=1, min_width=width)
 
 
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
-fill = urwid.Filler(cols, 'top', top=5)
+fill = urwid.Filler(cols, 'top', top=4)
 pbar = urwid.ProgressBar('pg normal', 'pg complete', 0, len(cols.contents)-1)
 p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
 all = Pile([ fill, (2, p) ] )
