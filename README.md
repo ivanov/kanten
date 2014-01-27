@@ -11,6 +11,8 @@ unix pager replacement (more and less) that is not limited to 80 columns.
 TODO
 ----
 [ ] horizontal progress bar indicator
+[ ] (n / m) total pages (columns) indicator
+[x] some vertical empty space at the top
 [x] space bar should move one column over (or whole screen?)
 [ ] reading from stdin
 [ ] configurable number of columns

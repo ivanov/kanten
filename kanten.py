@@ -41,7 +41,7 @@ if DEBUG:
 pile  = urwid.Pile(txts)
 
 width=40
-height=10
+height=40
 
 def trim(t, d, w=width):
     """Trim the text in `t` to only `d` lines, assuming a width of `w`"""
@@ -129,7 +129,7 @@ cols = urwid.Columns(piles, dividechars=10, min_width=width)
 
 
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
-fill = urwid.Filler(cols, 'top')
+fill = urwid.Filler(cols, 'top', top=5)
 loop = urwid.MainLoop(fill, unhandled_input=show_or_exit)
 
 loop.run()
