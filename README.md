@@ -17,7 +17,7 @@ TODO
 ----
 [x] horizontal progress bar indicator
 [ ] figure out how many columns are displayed, and adjust pbar accordingly
-[ ] don't make the last displayed columns dissappear at the end?
+[ ] don't make the last displayed columns disappear at the end?
 [ ] (n / m) total pages (columns) indicator
 [x] some vertical empty space at the top
 [x] space bar should move one column over (or whole screen?)
@@ -33,7 +33,7 @@ TODO
 [ ] (maybe) support multiple buffers?
     - :n and :p (or :N) for next and previous
     - :e to read a different file?
-[ ] . to repeat previous command (page up or down, next, etc)
+[x] . to repeat previous command (page up or down, next, etc)
 [ ] support more less/more keys 
     [x] < and >
     [x] z and w

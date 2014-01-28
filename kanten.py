@@ -13,6 +13,12 @@ k_top = ('g', '<', 'p')
 k_end = ('G', '>')
 def show_or_exit(key):
     global off_screen
+    global last_key
+
+    if key != '.':
+        last_key = key
+    else:
+        key = last_key
     if key in ('q', 'Q'):
         raise urwid.ExitMainLoop()
     elif key in k_back:
@@ -34,6 +40,7 @@ def show_or_exit(key):
     elif key in k_next:
         if cols.contents:
             off_screen.append(cols.contents.pop(0))
+
     pbar.set_completion(len(off_screen))
     #txt.set_text(repr(key))
 
