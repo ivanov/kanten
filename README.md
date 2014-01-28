@@ -21,9 +21,14 @@ TODO
 [ ] (n / m) total pages (columns) indicator
 [x] some vertical empty space at the top
 [x] space bar should move one column over (or whole screen?)
-[ ] reading from stdin
+[x] reading from stdin
+[x] specifying a filename from commandline
+[ ] demo file that explains kanten (tutorial)
+[ ] do a full install as a python package with an entry point
 [ ] configuration in ~/.config/kanten
 [ ] configurable number of columns
+[ ] automatically figure out size (for height, and number of columns)
+[ ] dynamic resizing of width
 [ ] all configurable take defaults from ~/.config, but overwritten by params
 [ ] param parsing (e.g. add --help)
 [ ] add help dialog on ? and possibly h
@@ -71,6 +76,8 @@ TODO
         - i.e. highlight the word in every instance, and reflow?
         - or at least to find the location of the word, and then index into the
           right / approximate column
+    - also makes it reasonable to scroll line by line (daisy chain visible cols)
+    - stop after all visible columns are filled
 [ ] search using / (to seek around)
 [ ] wrap-around optionally
 [x] going forward 4 times and then going back 4 doesn't work :(

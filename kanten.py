@@ -3,6 +3,7 @@ import urwid
 from urwid import Padding, Text, Pile
 import IPython
 import pudb
+import sys
 DEBUG = False
 
 off_screen = []
@@ -44,15 +45,22 @@ def show_or_exit(key):
     pbar.set_completion(len(off_screen))
     #txt.set_text(repr(key))
 
-fname = '/home/pi/fortunes/antoine_de_saintexupery'
-fname = '/home/pi/cur/eb.txt'
+# XXX: in the future this will be an explanation of how to use kanten
 fname = '/home/pi/cur/das.txt'
-with open(fname) as f:
-    text = f.read()
+
+if len(sys.argv) > 1:
+    fname = sys.argv[1]
+
+if not sys.stdin.isatty():
+    # read from a pipe
+    text = sys.stdin.read()
+else:
+    with open(fname) as f:
+        text = f.read()
 
 
 width=40
-height=50
+height=45
 def make_text(t):
     result = Padding(Text(t), ('relative', 100), width)
     if DEBUG:
@@ -60,6 +68,7 @@ def make_text(t):
     return result
 
 #txt = urwid.Text(text)
+text =  text.replace("\n","\n\n")
 txts = [make_text(t) for t in text.split('\n')]
 #if DEBUG:
 #    # my brain finds it easier to deal with boxes
