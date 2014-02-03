@@ -185,16 +185,7 @@ p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
 all = Pile([ fill, (2, p) ] )
 loop = urwid.MainLoop(all, palette, unhandled_input=show_or_exit)
 
-try:
-    loop.run()
-except IOError as e:
-    #sys.stderr.write(str(dir(e)))
-    #sys.stderr.write(str(e))
-    sys.stdout.write("""\nReading from a pipe not supported.
-    You appear to be using an old version of urwid.
-    Please upgrade.\n\n""")
-    raise 
-    
+loop.run()
 
 if DEBUG:
     for p in piles:
