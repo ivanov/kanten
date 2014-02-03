@@ -22,7 +22,8 @@ TODO
 [x] some vertical empty space at the top
 [x] space bar should move one column over (or whole screen?)
 [x] reading from stdin
-[ ] process keyboard shortcuts after reading from stdin (the way less does)
+[x] process keyboard shortcuts after reading from stdin (the way less does)
+[ ] read buffering (don't read the whole file before filling in)
 [x] specifying a filename from commandline
 [ ] demo file that explains kanten (tutorial)
 [ ] do a full install as a python package with an entry point

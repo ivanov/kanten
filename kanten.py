@@ -64,10 +64,15 @@ def show_or_exit(key):
 
 
 
+# XXX: implement buffering here, don't read the whole file / piped message
 if not sys.stdin.isatty():
     # read from a pipe
     text = sys.stdin.read()
-    #sys.stdin.close()
+    import os
+    sys.stdin.close()
+    # reopen stdin now that we've read from the pipe
+    sys.__stdin__ = sys.stdin = open('/dev/tty')
+    os.dup2(sys.stdin.fileno(), 0)
 else:
     with open(fname) as f:
         text = f.read()
