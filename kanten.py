@@ -4,7 +4,24 @@ from urwid import Padding, Text, Pile
 import IPython
 import pudb
 import sys
+import argparse
 DEBUG = False
+
+parser = argparse.ArgumentParser(description='A more aesthetic pager')
+parser.add_argument('filenames', metavar='f', nargs='*',
+                   help='an integer for the accumulator')
+parser.add_argument( '-w','--width', dest='width', metavar='N', type=int,
+                   default=80,
+                   help='the number of character in a column')
+
+args = parser.parse_args()
+width= args.width
+
+if not args.filenames:
+    # XXX: in the future this will be an explanation of how to use kanten
+    fname = '/home/pi/cur/das.txt'
+else:
+    fname = args.filenames[0]
 
 off_screen = []
 
@@ -45,21 +62,16 @@ def show_or_exit(key):
     pbar.set_completion(len(off_screen))
     #txt.set_text(repr(key))
 
-# XXX: in the future this will be an explanation of how to use kanten
-fname = '/home/pi/cur/das.txt'
 
-if len(sys.argv) > 1:
-    fname = sys.argv[1]
 
 if not sys.stdin.isatty():
     # read from a pipe
     text = sys.stdin.read()
+    #sys.stdin.close()
 else:
     with open(fname) as f:
         text = f.read()
 
-
-width=40
 height=45
 def make_text(t):
     result = Padding(Text(t), ('relative', 100), width)
@@ -168,13 +180,23 @@ p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
 all = Pile([ fill, (2, p) ] )
 loop = urwid.MainLoop(all, palette, unhandled_input=show_or_exit)
 
-loop.run()
+try:
+    loop.run()
+except IOError as e:
+    #sys.stderr.write(str(dir(e)))
+    #sys.stderr.write(str(e))
+    sys.stdout.write("""\nReading from a pipe not supported.
+    You appear to be using an old version of urwid.
+    Please upgrade.\n\n""")
+    raise 
+    
 
 if DEBUG:
     for p in piles:
         print h(p)
         for c in p.contents:
             print "\t" , h(c[0])
+
 
 #IPython.embed()
 #pu.db

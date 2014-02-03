@@ -22,11 +22,12 @@ TODO
 [x] some vertical empty space at the top
 [x] space bar should move one column over (or whole screen?)
 [x] reading from stdin
+[ ] process keyboard shortcuts after reading from stdin (the way less does)
 [x] specifying a filename from commandline
 [ ] demo file that explains kanten (tutorial)
 [ ] do a full install as a python package with an entry point
 [ ] configuration in ~/.config/kanten
-[ ] configurable number of columns
+[x] configurable number of columns (via -w or --width)
 [ ] automatically figure out size (for height, and number of columns)
 [ ] dynamic resizing of width
 [ ] all configurable take defaults from ~/.config, but overwritten by params
