@@ -25,13 +25,16 @@ else:
 
 off_screen = []
 
-k_next = (' ', 'f', 'z', 'j')
-k_back = ('b', 'B', 'w', 'k')
+k_next = (' ', 'f', 'z', 'j', 'l',  'ctrl f', 'ctrl v')
+k_back = ('b', 'B', 'w', 'k', 'h', 'ctrl b')
 k_top = ('g', '<', 'p')
 k_end = ('G', '>')
+k_info = ('ctrl g', '=')
+
 def show_or_exit(key):
     global off_screen
     global last_key
+    txt = ''
 
     if key != '.':
         last_key = key
@@ -55,12 +58,23 @@ def show_or_exit(key):
         off_screen.extend(cols.contents)
         # XXX: backfill here properly - fill the hole screen
         cols.contents = [ off_screen.pop() ]
+        txt = '(END)'
     elif key in k_next:
-        if cols.contents:
+        if len(cols.contents) > 1:
             off_screen.append(cols.contents.pop(0))
-
+        if len(cols.contents) == 1:
+            txt = '(END)'
+    elif key in (':'):
+        #loop.widget = loop.cmd
+        #all.contents.append(((1, urwid.Filler(Text("hello"))), all.options()))
+        cmd_line_text.set_text(':')
+    elif key in k_info:
+        #loop.widget = loop.cmd
+        #all.contents.append(((1, urwid.Filler(Text("hello"))), all.options()))
+        txt = fname
+        txt += "  (%d / %d)" % (total_cols-len(cols.contents)+1 , total_cols)
+    cmd_line_text.set_text(txt)
     pbar.set_completion(len(off_screen))
-    #txt.set_text(repr(key))
 
 
 
@@ -73,6 +87,7 @@ if not sys.stdin.isatty():
     # reopen stdin now that we've read from the pipe
     sys.__stdin__ = sys.stdin = open('/dev/tty')
     os.dup2(sys.stdin.fileno(), 0)
+    fname = 'STDIN'
 else:
     with open(fname) as f:
         text = f.read()
@@ -180,10 +195,16 @@ cols = urwid.Columns(piles, dividechars=1, min_width=width)
 
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
 fill = urwid.Filler(cols, 'top', top=4)
-pbar = urwid.ProgressBar('pg normal', 'pg complete', 0, len(cols.contents)-1)
+total_cols = len(cols.contents)
+pbar = urwid.ProgressBar('pg normal', 'pg complete', 0, total_cols-1)
 p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
-all = Pile([ fill, (2, p) ] )
+cmd_line_text = urwid.Text(fname)
+cmd_line = urwid.Filler(cmd_line_text, bottom=1)
+#cmd_line = urwid.Overlay(cmd_line, p, 'center', None, 'middle', None)
+
+all = Pile([ fill, (1, p), (1, cmd_line) ] )
 loop = urwid.MainLoop(all, palette, unhandled_input=show_or_exit)
+loop.cmd = cmd_line
 
 loop.run()
 

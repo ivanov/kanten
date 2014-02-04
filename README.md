@@ -16,9 +16,9 @@ bond - "according to my bond, no more, nor less"
 TODO
 ----
 [x] horizontal progress bar indicator
-[ ] figure out how many columns are displayed, and adjust pbar accordingly
-[ ] don't make the last displayed columns disappear at the end?
-[ ] (n / m) total pages (columns) indicator
+[x] figure out how many columns are displayed, and adjust pbar accordingly
+[x] don't make the last displayed columns disappear at the end?
+[x] (n / m) total pages (columns) indicator
 [x] some vertical empty space at the top
 [x] space bar should move one column over (or whole screen?)
 [x] reading from stdin
@@ -28,11 +28,13 @@ TODO
 [ ] demo file that explains kanten (tutorial)
 [ ] do a full install as a python package with an entry point
 [ ] configuration in ~/.config/kanten
+[ ] all configurable take defaults from ~/.config, but overwritten by params
 [x] configurable number of columns (via -w or --width)
 [ ] automatically figure out size (for height, and number of columns)
 [ ] dynamic resizing of width
-[ ] all configurable take defaults from ~/.config, but overwritten by params
-[ ] param parsing (e.g. add --help)
+[x] param parsing (e.g. add --help)
+[ ] hide the progress bar (ctrl-n is what zathura uses or something?)
+[ ] add a parameter to disable progress bar
 [ ] add help dialog on ? and possibly h
 [ ] add : command mode
     - support :q
@@ -45,12 +47,12 @@ TODO
     [x] < and >
     [x] z and w
     [x] j and k (page-wise OK)
-    [ ] = to show file name / info
+    [x] = to show file name / info (ctrl-g should also work)
     [ ] others?
     [ ] F - forward forever (for stdin)
 [ ] control key combos
-    [ ] ctrl-v and ctrl-b
-    [ ] ctrl-g for file info
+    [x] ctrl-v  ctrl-f  for page forward and ctrl-b for back back
+    [x] ctrl-g for file info
 [ ] (maybe) implement marking system (top lines?)
     - like less, marks will only live for duration of program execution
 [ ] (maybe) support 'v' to edit, like less
