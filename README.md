@@ -19,6 +19,8 @@ TODO
 [x] figure out how many columns are displayed, and adjust pbar accordingly
 [x] don't make the last displayed columns disappear at the end?
 [x] (n / m) total pages (columns) indicator
+[ ] max columns should always be shown
+[ ] progress bar should consider all visible columns as shown 
 [x] some vertical empty space at the top
 [x] space bar should move one column over (or whole screen?)
 [x] reading from stdin
