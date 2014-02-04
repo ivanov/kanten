@@ -87,9 +87,9 @@ TODO
     - also makes it reasonable to scroll line by line (daisy chain visible cols)
     - stop after all visible columns are filled
 [ ] search using / (to seek around)
-[ ] highlight words in the text
-[ ] highlight searched word (switch to ANSIText?) 
-[ ] replace searched words with highlighted version
+[x] highlight words in the text
+[x] highlight searched word (switch to ANSIText?) 
+[x] replace searched words with highlighted version
 [ ] wrap-around optionally
 [x] going forward 4 times and then going back 4 doesn't work :(
     maybe related:

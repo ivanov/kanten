@@ -100,14 +100,30 @@ max_width, max_height = screen.get_cols_rows()
 height = max_height-10
 
 def make_text(t):
-    result = Padding(Text(t), ('relative', 100), width)
+    result = Padding(Text(t, align='left'), ('relative', 100), width, left=2,
+            right=2)
     if DEBUG:
         return urwid.LineBox(result)
     return result
 
 #txt = urwid.Text(text)
-text =  text.replace("\n","\n\n")
+#text =  text.replace("\n","\n\n")
+def search(text, word):
+    txts = text.split(word)
+    f = lambda x: ('important', word)
+    res = list(f((yield t)) for t in txts)
+    
+    #res = [t for stub in txts for t in (stub, ('important', word))]
+    # N. B. this approach adds a superflous trailing match
+    return res[:-1]
+
+
+
+#text = [
 txts = [make_text(t) for t in text.split('\n')]
+#s = search(text, 'all')
+#txts = [make_text(list(t)) for t in zip(s[::3], s[1::3], s[2::3])]
+[t.original_widget.set_text(search(t.original_widget.text, 'all')) for t in txts]
 #if DEBUG:
 #    # my brain finds it easier to deal with boxes
 #    txts = [urwid.LineBox(t) for t in txts]
@@ -177,6 +193,7 @@ piles.append(p)
 palette = [
     (None,  'light gray', 'black'),
     ('heading', 'black', 'light gray'),
+    ('important', 'black', 'light gray'),
     ('line', 'black', 'light gray'),
     ('options', 'dark gray', 'black'),
     ('focus heading', 'white', 'dark red'),
@@ -220,6 +237,7 @@ if DEBUG:
         for c in p.contents:
             print "\t" , h(c[0])
 
-
+print [type(t.original_widget.text) for t in txts]
+print [t.original_widget.get_text() for t in txts[0:40]]
 #IPython.embed()
 #pu.db
