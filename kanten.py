@@ -93,6 +93,12 @@ else:
         text = f.read()
 
 height=45
+
+screen =  screen = urwid.raw_display.Screen()
+max_width, max_height = screen.get_cols_rows()
+
+height = max_height-10
+
 def make_text(t):
     result = Padding(Text(t), ('relative', 100), width)
     if DEBUG:
@@ -203,7 +209,7 @@ cmd_line = urwid.Filler(cmd_line_text, bottom=1)
 #cmd_line = urwid.Overlay(cmd_line, p, 'center', None, 'middle', None)
 
 all = Pile([ fill, (1, p), (1, cmd_line) ] )
-loop = urwid.MainLoop(all, palette, unhandled_input=show_or_exit)
+loop = urwid.MainLoop(all, palette, screen, unhandled_input=show_or_exit)
 loop.cmd = cmd_line
 
 loop.run()

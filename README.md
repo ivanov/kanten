@@ -30,7 +30,11 @@ TODO
 [ ] configuration in ~/.config/kanten
 [ ] all configurable take defaults from ~/.config, but overwritten by params
 [x] configurable number of columns (via -w or --width)
-[ ] automatically figure out size (for height, and number of columns)
+[x] automatically figure out size (for height, and number of columns)
+[ ] 'v' to edit the file (disabled for stdin?)
+[ ] open file to the right line (at least the top-left column's line
+[ ] on exit, refresh the file in kanten
+[ ] run_wrapper to restore previous screen?
 [ ] dynamic resizing of width
 [x] param parsing (e.g. add --help)
 [ ] hide the progress bar (ctrl-n is what zathura uses or something?)
@@ -42,7 +46,7 @@ TODO
 [ ] (maybe) support multiple buffers?
     - :n and :p (or :N) for next and previous
     - :e to read a different file?
-[x] . to repeat previous command (page up or down, next, etc)
+[x] . (dot) to repeat previous command (page up or down, next, etc)
 [ ] support more less/more keys 
     [x] < and >
     [x] z and w
@@ -83,6 +87,9 @@ TODO
     - also makes it reasonable to scroll line by line (daisy chain visible cols)
     - stop after all visible columns are filled
 [ ] search using / (to seek around)
+[ ] highlight words in the text
+[ ] highlight searched word (switch to ANSIText?) 
+[ ] replace searched words with highlighted version
 [ ] wrap-around optionally
 [x] going forward 4 times and then going back 4 doesn't work :(
     maybe related:
