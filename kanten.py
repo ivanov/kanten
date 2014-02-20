@@ -30,6 +30,8 @@ k_back = ('b', 'B', 'w', 'k', 'h', 'ctrl b')
 k_top = ('g', '<', 'p')
 k_end = ('G', '>')
 k_info = ('ctrl g', '=')
+k_next_search = ('n',)
+k_prev_search = ('N',)
 
 def show_or_exit(key):
     global off_screen
@@ -44,10 +46,11 @@ def show_or_exit(key):
         raise urwid.ExitMainLoop()
     elif key in k_back:
         #off_screen.append(cols.contents.pop())
-        if off_screen:
-            new_first = off_screen.pop()
-            cols.contents.insert(0, new_first)
-            cols.focus_position=0
+        for x in range(displayed_columns):
+            if off_screen:
+                new_first = off_screen.pop()
+                cols.contents.insert(0, new_first)
+                cols.focus_position=0
     elif key in k_top:
         # take it from the top
         cols.contents = off_screen + cols.contents
@@ -56,23 +59,31 @@ def show_or_exit(key):
     elif key in k_end:
         # this is the end, my friends, the end, the end.
         off_screen.extend(cols.contents)
-        # XXX: backfill here properly - fill the hole screen
-        cols.contents = [ off_screen.pop() ]
+        # backfill here properly - fill the hole screen (add back as many columns as can be displayed)
+        cols.contents = [off_screen.pop() for x in range(displayed_columns) ][::-1]
         txt = '(END)'
     elif key in k_next:
-        if len(cols.contents) > 1:
-            off_screen.append(cols.contents.pop(0))
-        if len(cols.contents) == 1:
+        for x in range(displayed_columns):
+            if len(cols.contents) > displayed_columns:
+                off_screen.append(cols.contents.pop(0))
+        if len(cols.contents) == displayed_columns:
             txt = '(END)'
-    elif key in (':'):
+    elif key in k_next_search:
+        # focus pane with a next result only if found
+        pass
+    elif key in k_prev_search:
+        # focus last result only if found
+        pass
+    elif key in (':',):
         #loop.widget = loop.cmd
         #all.contents.append(((1, urwid.Filler(Text("hello"))), all.options()))
-        cmd_line_text.set_text(':')
+        # XXX: this isn't enough - do a more proper ex-style command line here
+        txt = ': (ex-style commands not yet implemented, sorry)'
     elif key in k_info:
         #loop.widget = loop.cmd
         #all.contents.append(((1, urwid.Filler(Text("hello"))), all.options()))
         txt = fname
-        txt += "  (%d / %d)" % (total_cols-len(cols.contents)+1 , total_cols)
+        txt += "  (%d / %d)" % (total_cols-len(cols.contents)+1 , total_cols - displayed_columns)
     cmd_line_text.set_text(txt)
     pbar.set_completion(len(off_screen))
 
@@ -193,7 +204,7 @@ piles.append(p)
 palette = [
     (None,  'light gray', 'black'),
     ('heading', 'black', 'light gray'),
-    ('important', 'black', 'light gray'),
+    ('important', 'black', 'light cyan'),
     ('line', 'black', 'light gray'),
     ('options', 'dark gray', 'black'),
     ('focus heading', 'white', 'dark red'),
@@ -219,7 +230,8 @@ cols = urwid.Columns(piles, dividechars=1, min_width=width)
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
 fill = urwid.Filler(cols, 'top', top=4)
 total_cols = len(cols.contents)
-pbar = urwid.ProgressBar('pg normal', 'pg complete', 0, total_cols-1)
+displayed_columns = len( cols.column_widths(screen.get_cols_rows()))
+pbar = urwid.ProgressBar('pg normal', 'pg complete', 0, total_cols - displayed_columns)
 p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
 cmd_line_text = urwid.Text(fname)
 cmd_line = urwid.Filler(cmd_line_text, bottom=1)
@@ -228,7 +240,6 @@ cmd_line = urwid.Filler(cmd_line_text, bottom=1)
 all = Pile([ fill, (1, p), (1, cmd_line) ] )
 loop = urwid.MainLoop(all, palette, screen, unhandled_input=show_or_exit)
 loop.cmd = cmd_line
-
 loop.run()
 
 if DEBUG:
@@ -237,7 +248,12 @@ if DEBUG:
         for c in p.contents:
             print "\t" , h(c[0])
 
-print [type(t.original_widget.text) for t in txts]
-print [t.original_widget.get_text() for t in txts[0:40]]
+#print [type(t.original_widget.text) for t in txts]
+#print [(t.original_widget.get_text()[1]) for t in txts[0:100]]
+f = lambda t:t.original_widget.get_text()[1]
+g = lambda t:len(f(t))
+#print [f(t) for t in txts[:] if g(t)>0]
+
+
 #IPython.embed()
 #pu.db

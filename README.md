@@ -11,7 +11,7 @@ possible other names
 --------------------
 onte - [c]onte[xt] [c]onte[nt]
 kinc - "A little more than kin, and less than kind"
-bond - "according to my bond, no more, nor less"
+bond - "according to my bond, no more, nor less" -- Merchant of Venice
 
 TODO
 ----
@@ -19,13 +19,15 @@ TODO
 [x] figure out how many columns are displayed, and adjust pbar accordingly
 [x] don't make the last displayed columns disappear at the end?
 [x] (n / m) total pages (columns) indicator
-[ ] max columns should always be shown
-[ ] progress bar should consider all visible columns as shown 
+[x] max columns should always be shown
+[x] progress bar should consider all visible columns as shown 
 [x] some vertical empty space at the top
-[x] space bar should move one column over (or whole screen?)
+[x] space bar should move whole screen over (displayed_columns)
+[ ] d and u (^D and ^U) go forward and back a column (half-screen in less)
 [x] reading from stdin
 [x] process keyboard shortcuts after reading from stdin (the way less does)
 [ ] read buffering (don't read the whole file before filling in)
+[ ] double spacing option for easier reading?
 [x] specifying a filename from commandline
 [ ] demo file that explains kanten (tutorial)
 [ ] do a full install as a python package with an entry point
@@ -35,8 +37,9 @@ TODO
 [x] automatically figure out size (for height, and number of columns)
 [ ] 'v' to edit the file (disabled for stdin?)
 [ ] open file to the right line (at least the top-left column's line
-[ ] on exit, refresh the file in kanten
+[ ] on exit from editing, refresh the file in kanten
 [ ] run_wrapper to restore previous screen?
+    - moar and bpython do this, i think
 [ ] dynamic resizing of width
 [x] param parsing (e.g. add --help)
 [ ] hide the progress bar (ctrl-n is what zathura uses or something?)
@@ -91,7 +94,13 @@ TODO
 [ ] search using / (to seek around)
 [x] highlight words in the text
 [x] highlight searched word (switch to ANSIText?) 
+[ ] parse shell escaped characters properly
+    - so we can read man pages
+    - look at the piped output of grep --color=always
+    - I think the Qt console has some code for this?
 [x] replace searched words with highlighted version
+[ ] highlight current matched search item differently than some other
+    - traverse the contents, and change an 'important' to somehting else
 [ ] wrap-around optionally
 [x] going forward 4 times and then going back 4 doesn't work :(
     maybe related:
@@ -100,3 +109,9 @@ TODO
         urwid.widget.WidgetError: Widget <Filler box widget <Columns box/flow widget> valign='top'> rendered (193 x 45) canvas when passed size (193, 51
     [x] (maybe) try cache invalidation? nope, _invalidate doesn't hel
     [x] [cols.focus_position=0 seems to have done the trick!
+[ ] bash completion for flags (is there one for python  ArgParse code already?)
+    - yeap! use https://github.com/kislyuk/argcomplete
+[ ] write some tests, with Travis and Coveralls badges in the readme?
+[ ] take a look at what @jlord accomplished with http://jlord.us/horizontal-web/
+
+
