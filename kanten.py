@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import urwid
-from urwid import Padding, Text, Pile
+from urwid import Padding, Text, Pile, ProgressBar
 import IPython
 import pudb
 import sys
@@ -83,9 +83,10 @@ def show_or_exit(key):
         #loop.widget = loop.cmd
         #all.contents.append(((1, urwid.Filler(Text("hello"))), all.options()))
         txt = fname
-        txt += "  (%d / %d)" % (total_cols-len(cols.contents)+1 , total_cols - displayed_columns)
+        txt += "  (%d / %d)" % (total_cols-len(cols.contents) +
+                displayed_columns , total_cols)
     cmd_line_text.set_text(txt)
-    pbar.set_completion(len(off_screen))
+    pbar.set_completion(len(off_screen)+displayed_columns)
 
 
 
@@ -231,7 +232,7 @@ cols = urwid.Columns(piles, dividechars=1, min_width=width)
 fill = urwid.Filler(cols, 'top', top=4)
 total_cols = len(cols.contents)
 displayed_columns = len( cols.column_widths(screen.get_cols_rows()))
-pbar = urwid.ProgressBar('pg normal', 'pg complete', 0, total_cols - displayed_columns)
+pbar = ProgressBar('pg normal', 'pg complete', displayed_columns, total_cols)
 p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
 cmd_line_text = urwid.Text(fname)
 cmd_line = urwid.Filler(cmd_line_text, bottom=1)
