@@ -1,6 +1,10 @@
 kanten
 ======
-Japanese for word for agar, a gelatinous substance derived from seaweed.
+
+more content, less paging
+-------------------------
+
+kan-ten: Japanese for word for agar, a gelatinous substance derived from seaweed.
 
 This program was inspired by a similar one called [Tofu][] for OS X, a
 column-based reader application, where the columns are arranged horizontally.
@@ -113,5 +117,6 @@ TODO
     - yeap! use https://github.com/kislyuk/argcomplete
 [ ] write some tests, with Travis and Coveralls badges in the readme?
 [ ] take a look at what @jlord accomplished with http://jlord.us/horizontal-web/
-
-
+[ ] more has a way of listing multiple files
+[ ] respond to whinch and re-do the number of columns
+[ ] hide progress bar (perhaps on timeout after paging through)
