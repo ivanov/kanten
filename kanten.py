@@ -39,10 +39,13 @@ k_command = (':',)
 k_submit = ('enter',)
 k_escape = ('esc',)
 
+do_cmd = lambda x: None
+
 def show_or_exit(key):
     global off_screen
     global last_key
     global show
+    global do_cmd
     txt = ''
 
     # set the progress bar visibility, so info can set it just once
@@ -81,13 +84,18 @@ def show_or_exit(key):
     elif key in k_search:
         #cmd_line_text.focus()
         all.set_focus('footer')
-        pass
+        txt = '/'
+        do_cmd = lambda x: rehighlight(txts, x)
+        cmd_line_text.set_edit_text('')
     elif key in k_command:
-        cmd_line_text.set_caption(':')
+        txt = ':'
         all.set_focus('footer')
     elif key in k_submit:
         if all.get_focus() == 'footer':
-            txt = 'submitted '
+            input = cmd_line_text.get_edit_text()
+            txt = 'submitted ' + input
+            cmd_line_text.set_edit_text('');
+            do_cmd(input)
             # put code to submit the selection here
             all.set_focus('body')
     elif key in k_escape:
@@ -115,6 +123,7 @@ def show_or_exit(key):
         show = not show
         pbh.send(show)
     cmd_line_text.set_caption(txt)
+    #cmd_line_text.set_edit_text(txt)
     pbar.set_completion(len(off_screen)+displayed_columns)
 
 show = True

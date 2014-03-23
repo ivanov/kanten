@@ -49,9 +49,11 @@ TODO
 [ ] hide the progress bar (ctrl-n is what zathura uses or something?)
 [ ] add a parameter to disable progress bar
 [ ] add help dialog on ? and possibly h
-[ ] add : command mode
+[x] add : command mode
     - support :q
     - support :f for file info
+    [ ] don't allow deletion of ':' prompt in command mode
+    [ ] backspace in command mode should leave it?
 [ ] (maybe) support multiple buffers?
     - :n and :p (or :N) for next and previous
     - :e to read a different file?
@@ -96,10 +98,10 @@ TODO
           right / approximate column
     - also makes it reasonable to scroll line by line (daisy chain visible cols)
     - stop after all visible columns are filled
-[ ] search using / (to seek around)
+[x] search using / (to seek around)
     - use a footer / header of the frame widget to do this and :?
-    [ ] enter do submit footer content
-    [ ] esc to refocus the window
+    [x] enter do submit footer content
+    [x] esc to refocus the window
 [x] highlight words in the text
 [x] highlight searched word (switch to ANSIText?) 
 [ ] parse shell escaped characters properly
