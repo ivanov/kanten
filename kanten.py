@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import urwid
 from urwid import Padding, Text, Pile, ProgressBar
+import time
 import IPython
 import pudb
 import sys
@@ -32,11 +33,16 @@ k_end = ('G', '>')
 k_info = ('ctrl g', '=')
 k_next_search = ('n',)
 k_prev_search = ('N',)
+k_toggle_pbar = ('t',)
 
 def show_or_exit(key):
     global off_screen
     global last_key
+    global show
     txt = ''
+
+    # set the progress bar visibility, so info can set it just once
+    pbh.send(show)
 
     if key != '.':
         last_key = key
@@ -85,10 +91,35 @@ def show_or_exit(key):
         txt = fname
         txt += "  (%d / %d)" % (total_cols-len(cols.contents) +
                 displayed_columns , total_cols)
+        if len(cols.contents) == displayed_columns:
+            txt += ' (END)'
+        pbh.send(True)
+    elif key in k_toggle_pbar:
+        show = not show
+        pbh.send(show)
     cmd_line_text.set_text(txt)
     pbar.set_completion(len(off_screen)+displayed_columns)
 
+show = True
+def progress_bar_handler():
+    """Progress bar coroutine. Send it whether or not you want to show the
+    progress bar. 
 
+    XXX: despite good intentions, I think I overengineered this bit. It could
+    probably just be a function - I originally was trying to do some timing
+    stuff in here, but ended up ripping out before making the commit
+    """
+    show = (yield)
+    while True:
+        if not len(p.body):
+            p.body.append(pbar)
+        if not show:
+            if len(p.body):
+                p.body.pop()
+        show = (yield)
+
+pbh = progress_bar_handler()
+pbh.next()
 
 # XXX: implement buffering here, don't read the whole file / piped message
 if not sys.stdin.isatty():
