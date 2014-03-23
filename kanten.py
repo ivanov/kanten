@@ -1,12 +1,16 @@
 #!/usr/bin/env python
-import urwid
-from urwid import Padding, Text, Pile, ProgressBar
-import time
+from __future__ import print_function
+
+DEBUG = False
+# debugging only
 import IPython
-import pudb
+
 import sys
 import argparse
-DEBUG = False
+
+import urwid
+from urwid import Padding, Text, Pile, ProgressBar
+
 
 parser = argparse.ArgumentParser(description='A more aesthetic pager')
 parser.add_argument('filenames', metavar='f', nargs='*',
@@ -32,14 +36,51 @@ k_top = ('g', '<', 'p')
 k_end = ('G', '>')
 k_info = ('ctrl g', '=')
 k_search = ('/',)
+k_search_bw = ('?',)
 k_next_search = ('n',)
 k_prev_search = ('N',)
 k_toggle_pbar = ('t',)
 k_command = (':',)
 k_submit = ('enter',)
 k_escape = ('esc',)
+k_quit = ('q', 'Q')
 
-do_cmd = lambda x: None
+c = lambda x: cmd_line_text.set_caption(x)
+e = lambda x: cmd_line_text.set_edit_text(x)
+def display_help(args):
+    c('display help here %s'%args)
+
+def quit(args):
+    if '!' in args[0] or 'a' in args[0]:
+        print("\nold habits die hard! ;)")
+    raise urwid.ExitMainLoop()
+
+def edit(args):
+    c( "NotImplemented: can't open other files yet")
+    e( "NotImplemented: can't open other files yet")
+
+colon_dispatch = {
+        'help'  : display_help,
+        'quit'  : quit,
+        'q'     : quit,
+        'q!'    : quit,
+        'qa'    : quit, # old habits die hard
+        'qa!'   : quit, # old habits die hard
+        'exit'  : quit,
+        'e'     : edit,
+        'edit'  : edit,
+        }
+
+from collections import defaultdict
+        
+
+def colon(cmd):
+    c('would have run' + cmd)
+    args = cmd.split()
+    if args: # :<enter> will give a blank line as a cmd
+        colon_dispatch[args[0].lower()](args)
+
+do_cmd = colon
 
 def show_or_exit(key):
     global off_screen
@@ -55,7 +96,7 @@ def show_or_exit(key):
         last_key = key
     else:
         key = last_key
-    if key in ('q', 'Q'):
+    if key in k_quit:
         raise urwid.ExitMainLoop()
     elif key in k_back:
         #off_screen.append(cols.contents.pop())
@@ -87,13 +128,20 @@ def show_or_exit(key):
         txt = '/'
         do_cmd = lambda x: rehighlight(txts, x)
         cmd_line_text.set_edit_text('')
+    elif key in k_search_bw:
+        #cmd_line_text.focus()
+        all.set_focus('footer')
+        txt = '?'
+        do_cmd = lambda x: rehighlight(txts, x)
+        cmd_line_text.set_edit_text('')
     elif key in k_command:
         txt = ':'
         all.set_focus('footer')
+        cmd_line_text.set_edit_text('')
+        do_cmd = colon
     elif key in k_submit:
         if all.get_focus() == 'footer':
             input = cmd_line_text.get_edit_text()
-            txt = 'submitted ' + input
             cmd_line_text.set_edit_text('');
             do_cmd(input)
             # put code to submit the selection here
@@ -310,9 +358,9 @@ loop.run()
 
 if DEBUG:
     for p in piles:
-        print h(p)
+        print(h(p))
         for c in p.contents:
-            print "\t" , h(c[0])
+            print("\t" , h(c[0]))
 
 #print [type(t.original_widget.text) for t in txts]
 #print [(t.original_widget.get_text()[1]) for t in txts[0:100]]

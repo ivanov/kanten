@@ -80,6 +80,8 @@ TODO
 [x] reflow of text
 [ ] (maybe) reading cursor (like dictator?)
 [x] 'g' to go to the beginning 
+    [ ] gg g0 g$ and other commands?
+[ ] implement number prefixes
 [x] 'G' to go to the end
 [x] split boxes so that they partially fit
 [x] clip off lines that are too long even in one go
@@ -124,5 +126,5 @@ TODO
 [ ] write some tests, with Travis and Coveralls badges in the readme?
 [ ] take a look at what @jlord accomplished with http://jlord.us/horizontal-web/
 [ ] more has a way of listing multiple files
-[ ] respond to whinch and re-do the number of columns
+[ ] respond to sigwinch and re-do the number of columns
 [ ] hide progress bar (perhaps on timeout after paging through)
