@@ -8,6 +8,8 @@ import IPython
 import sys
 import argparse
 
+from collections import defaultdict
+
 import urwid
 from urwid import Padding, Text, Pile, ProgressBar
 
@@ -31,7 +33,7 @@ else:
 off_screen = []
 
 k_next = (' ', 'f', 'z', 'j', 'l',  'ctrl f', 'ctrl v')
-k_back = ('b', 'B', 'w', 'k', 'h', 'ctrl b')
+k_back = ('b', 'B', 'w', 'k', 'ctrl b')
 k_top = ('g', '<', 'p')
 k_end = ('G', '>')
 k_info = ('ctrl g', '=')
@@ -44,11 +46,23 @@ k_command = (':',)
 k_submit = ('enter',)
 k_escape = ('esc',)
 k_quit = ('q', 'Q')
+# not sure if 'h' not being mapped to 'left' is a good idea
+k_help = ('h', 'H', 'f1') 
 
 c = lambda x: cmd_line_text.set_caption(x)
 e = lambda x: cmd_line_text.set_edit_text(x)
-def display_help(args):
-    c('display help here %s'%args)
+
+def help_egg():
+    """Help!  I need somebody!
+    HELP!  Not just anybody
+    """
+    while True:
+        for m in help_egg.__doc__.split('\n'):
+            yield m
+help = help_egg()
+
+def display_help(args=None):
+    e(help.next())
 
 def quit(args):
     if '!' in args[0] or 'a' in args[0]:
@@ -56,10 +70,21 @@ def quit(args):
     raise urwid.ExitMainLoop()
 
 def edit(args):
-    c( "NotImplemented: can't open other files yet")
-    e( "NotImplemented: can't open other files yet")
+    if len(args) > 1:
+        e( "NotImplemented: can't open other files yet")
+    else:
+        return info(args)
 
-colon_dispatch = {
+def info(args):
+    show_or_exit('ctrl g')
+    return True
+
+def cmd_not_found(args):
+    e('not a kanten command: ' + ' '.join(args))
+
+# All dispatch commands should return True only if the rest of the
+# show_or_exit method should be skipped after they are performed.
+colon_dispatch_defaults = {
         'help'  : display_help,
         'quit'  : quit,
         'q'     : quit,
@@ -69,16 +94,17 @@ colon_dispatch = {
         'exit'  : quit,
         'e'     : edit,
         'edit'  : edit,
+        'f'     : edit,
+        'file'  : edit,
         }
-
-from collections import defaultdict
+colon_dispatch = defaultdict(lambda: cmd_not_found, colon_dispatch_defaults)
         
 
 def colon(cmd):
     c('would have run' + cmd)
     args = cmd.split()
     if args: # :<enter> will give a blank line as a cmd
-        colon_dispatch[args[0].lower()](args)
+        return colon_dispatch[args[0].lower()](args)
 
 do_cmd = colon
 
@@ -98,6 +124,8 @@ def show_or_exit(key):
         key = last_key
     if key in k_quit:
         raise urwid.ExitMainLoop()
+    elif key in k_help:
+        display_help()
     elif key in k_back:
         #off_screen.append(cols.contents.pop())
         for x in range(displayed_columns):
@@ -143,9 +171,12 @@ def show_or_exit(key):
         if all.get_focus() == 'footer':
             input = cmd_line_text.get_edit_text()
             cmd_line_text.set_edit_text('');
-            do_cmd(input)
-            # put code to submit the selection here
             all.set_focus('body')
+            if do_cmd(input):
+                # colon_dispatch methods return true if the rest of the method
+                # should be skipped (because colon_dispatch method also calls
+                # it, for example) 
+                return
     elif key in k_escape:
         if all.get_focus() == 'footer':
             txt = ''
@@ -159,8 +190,6 @@ def show_or_exit(key):
         # focus last result only if found
         pass
     elif key in k_info:
-        #loop.widget = loop.cmd
-        #all.contents.append(((1, urwid.Filler(Text("hello"))), all.options()))
         txt = fname
         txt += "  (%d / %d)" % (total_cols-len(cols.contents) +
                 displayed_columns , total_cols)

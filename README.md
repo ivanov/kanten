@@ -50,13 +50,14 @@ TODO
 [ ] add a parameter to disable progress bar
 [ ] add help dialog on ? and possibly h
 [x] add : command mode
-    - support :q
-    - support :f for file info
+    [x] support :q
+    [ ] support :f for file info
     [ ] don't allow deletion of ':' prompt in command mode
     [ ] backspace in command mode should leave it?
 [ ] (maybe) support multiple buffers?
     - :n and :p (or :N) for next and previous
-    - :e to read a different file?
+    [ ] :e to read a different file?
+        - filename tab completion for :e
 [x] . (dot) to repeat previous command (page up or down, next, etc)
 [ ] support more less/more keys 
     [x] < and >
@@ -128,3 +129,4 @@ TODO
 [ ] more has a way of listing multiple files
 [ ] respond to sigwinch and re-do the number of columns
 [ ] hide progress bar (perhaps on timeout after paging through)
+[ ] adding a keyboard shortcut should be sure to remove it from others
