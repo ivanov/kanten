@@ -31,9 +31,13 @@ k_back = ('b', 'B', 'w', 'k', 'h', 'ctrl b')
 k_top = ('g', '<', 'p')
 k_end = ('G', '>')
 k_info = ('ctrl g', '=')
+k_search = ('/',)
 k_next_search = ('n',)
 k_prev_search = ('N',)
 k_toggle_pbar = ('t',)
+k_command = (':',)
+k_submit = ('enter',)
+k_escape = ('esc',)
 
 def show_or_exit(key):
     global off_screen
@@ -74,17 +78,30 @@ def show_or_exit(key):
                 off_screen.append(cols.contents.pop(0))
         if len(cols.contents) == displayed_columns:
             txt = '(END)'
+    elif key in k_search:
+        #cmd_line_text.focus()
+        all.set_focus('footer')
+        pass
+    elif key in k_command:
+        cmd_line_text.set_caption(':')
+        all.set_focus('footer')
+    elif key in k_submit:
+        if all.get_focus() == 'footer':
+            txt = 'submitted '
+            # put code to submit the selection here
+            all.set_focus('body')
+    elif key in k_escape:
+        if all.get_focus() == 'footer':
+            txt = ''
+            all.set_focus('body')
     elif key in k_next_search:
         # focus pane with a next result only if found
+        rehighlight(txts,'com')
         pass
     elif key in k_prev_search:
+        rehighlight(txts,'the')
         # focus last result only if found
         pass
-    elif key in (':',):
-        #loop.widget = loop.cmd
-        #all.contents.append(((1, urwid.Filler(Text("hello"))), all.options()))
-        # XXX: this isn't enough - do a more proper ex-style command line here
-        txt = ': (ex-style commands not yet implemented, sorry)'
     elif key in k_info:
         #loop.widget = loop.cmd
         #all.contents.append(((1, urwid.Filler(Text("hello"))), all.options()))
@@ -97,7 +114,7 @@ def show_or_exit(key):
     elif key in k_toggle_pbar:
         show = not show
         pbh.send(show)
-    cmd_line_text.set_text(txt)
+    cmd_line_text.set_caption(txt)
     pbar.set_completion(len(off_screen)+displayed_columns)
 
 show = True
@@ -160,13 +177,16 @@ def search(text, word):
     # N. B. this approach adds a superflous trailing match
     return res[:-1]
 
+def rehighlight(txts, s):
+    [t.original_widget.set_text(search(t.original_widget.text, s)) for t in txts]
 
 
 #text = [
 txts = [make_text(t) for t in text.split('\n')]
 #s = search(text, 'all')
 #txts = [make_text(list(t)) for t in zip(s[::3], s[1::3], s[2::3])]
-[t.original_widget.set_text(search(t.original_widget.text, 'all')) for t in txts]
+#[t.original_widget.set_text(search(t.original_widget.text, 'all')) for t in txts]
+rehighlight(txts,'all')
 #if DEBUG:
 #    # my brain finds it easier to deal with boxes
 #    txts = [urwid.LineBox(t) for t in txts]
@@ -269,9 +289,14 @@ cmd_line_text = urwid.Text(fname)
 cmd_line = urwid.Filler(cmd_line_text, bottom=1)
 #cmd_line = urwid.Overlay(cmd_line, p, 'center', None, 'middle', None)
 
-all = Pile([ fill, (1, p), (1, cmd_line) ] )
+all = Pile([ fill, (1, p), ]) #(1, cmd_line) ] )
+cmd_line_text = urwid.Edit(fname)
+all = urwid.Frame(body=all, footer=cmd_line_text)
 loop = urwid.MainLoop(all, palette, screen, unhandled_input=show_or_exit)
 loop.cmd = cmd_line
+
+#IPython.embed()
+
 loop.run()
 
 if DEBUG:

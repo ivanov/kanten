@@ -61,6 +61,7 @@ TODO
     [x] z and w
     [x] j and k (page-wise OK)
     [x] = to show file name / info (ctrl-g should also work)
+        [ ] ctrl-g should show status bar only once
     [ ] others?
     [ ] F - forward forever (for stdin)
 [ ] control key combos
@@ -96,6 +97,9 @@ TODO
     - also makes it reasonable to scroll line by line (daisy chain visible cols)
     - stop after all visible columns are filled
 [ ] search using / (to seek around)
+    - use a footer / header of the frame widget to do this and :?
+    [ ] enter do submit footer content
+    [ ] esc to refocus the window
 [x] highlight words in the text
 [x] highlight searched word (switch to ANSIText?) 
 [ ] parse shell escaped characters properly
