@@ -7,6 +7,7 @@ import IPython
 
 import sys
 import argparse
+import zlib
 
 from collections import defaultdict
 
@@ -19,11 +20,24 @@ parser.add_argument('filenames', metavar='f', nargs='*',
                    help='an integer for the accumulator')
 parser.add_argument( '-w','--width', dest='width', metavar='N', type=int,
                    default=80,
-                   help='the number of character in a column')
+                   help='the number of character in a column line')
+parser.add_argument( '-l','--height', '--lines', dest='height', metavar='N', type=int,
+                   default='0',
+                   help='the number of lines per column (0 for auto)')
+parser.add_argument( '-t','--top', dest='top', metavar='N', type=int,
+                   default='4',
+                   help='the number of lines to leave blank at the top')
+parser.add_argument( '-b','--bottom', dest='bottom', metavar='N', type=int,
+                   default='4',
+                   help='the number of lines to leave blank at the bototm')
 
 args = parser.parse_args()
 width= args.width
+height = args.height
+top = args.top
+bottom = args.bottom
 
+top_margin = args.top 
 if not args.filenames:
     # XXX: in the future this will be an explanation of how to use kanten
     fname = '/home/pi/cur/das.txt'
@@ -32,8 +46,10 @@ else:
 
 off_screen = []
 
-k_next = (' ', 'f', 'z', 'j', 'l',  'ctrl f', 'ctrl v')
-k_back = ('b', 'B', 'w', 'k', 'ctrl b')
+k_next = (' ', 'f', 'z', 'l',  'ctrl f', 'ctrl v')
+k_prev = ('b', 'B', 'w', 'ctrl b')
+k_next_one = ('j', 'ctrl y')
+k_prev_one = ('k', 'ctrl e')
 k_top = ('g', '<', 'p')
 k_end = ('G', '>')
 k_info = ('ctrl g', '=')
@@ -53,12 +69,10 @@ c = lambda x: cmd_line_text.set_caption(x)
 e = lambda x: cmd_line_text.set_edit_text(x)
 
 def help_egg():
-    """Help!  I need somebody!
-    HELP!  Not just anybody
-    """
+    egg = 'x\x9c\xed\x92\xbfN\xc30\x10\xc6w?\xc5u\xeaR\xf5\x1d@Bj%\xa8\xd8:\xbb\xf1%6M\xceQ\xec\xb4\nO\xcfwv\xa9@bca`\x88\x92\xdc\x9f\xef\xf3\xfd\xce;\xee\xc7\x15\xedI\x98\x1d\xa58\xf0)\xbae\xbb\xdd\x9a\xdd\xd3\xf3\xeb\x8a\x0e1\xd3\xdb\x9c2YY4cv\xa8\xdf\xd0\x12g:K\xbc~m\x8c\xc2\x1b\xf2H\x1bs\xf4,H]m\xd2J\xe9xB\x05\rs\xe3\xef\xff\xd9[\xa1\x1c\x9d]\x8cj\\\x10R%h\xdd\x9c\xd6\xa9\x88Q\x10\x8d@k1\x8fs&5\xcd\x9e\x13\x13Z\x13\xd9\x89\xa9+\xce\xfb\xf5\x80dV\xa3\xc4}K6\xa5ybg\x0e\xe5\x94m\x10\x87\x92\x0bS\x03\xe3\x0e6\xc3B\x83\x06-\x9e8\xb2 4\x8f*M.\xc6)\x992)\rL\xa1-\xe36V\xaaI\xcb\xdc\x07\xe9Pv\x15\xf3\xa0\xb2\xf8$;\x8e\x137\xc1f.\xd5\'\xd6\x92\xf5\x84i\xdd]\xa9\xe3\xac\xb6\x10\xc8t\xb2\xcd\x99\xa2\x14\xc3\xae\x96\x1d\xa3\xacs\xe9\x1e{\xb6\t3\xd5w\xe50\xb0)n\n\x00"}h\x91\x00\xe0\xcfy\xc0)\xfa\x82\xf9\x86+\x99\x97\x05Q\xc7\x18\xce\xb14\x0c.<$@\xa7\x8b\x95\x90\xbc\xb6\xa8\xbd\xb7\xef\\\xd8\xea\x16\x96b\xa0Pr]\xa2\x8e\xab\xb2A\x127 \x8au\x9d\xeb\x12lF\xba\\\x8er\x07\xf4\xe0}8s\xc5\\W\xea\xb0\x1a\xb0h#\xfa\xfe"\xd0\xff\x8bZ\xb9~\xc3\xba\xf9-\xd7\xcd\x0f\x1f1\xfa\x0f\xb5\xec\x84>'
     while True:
-        for m in help_egg.__doc__.split('\n'):
-            yield m
+        for m in zlib.decompress(egg).split('\n'):
+            yield m.lstrip()
 help = help_egg()
 
 def display_help(args=None):
@@ -108,12 +122,18 @@ def colon(cmd):
 
 do_cmd = colon
 
+def page_back():
+    pass
+
+
 def show_or_exit(key):
     global off_screen
     global last_key
     global show
     global do_cmd
+    # clear out old messages
     txt = ''
+    cmd_line_text.set_edit_text('') 
 
     # set the progress bar visibility, so info can set it just once
     pbh.send(show)
@@ -126,7 +146,13 @@ def show_or_exit(key):
         raise urwid.ExitMainLoop()
     elif key in k_help:
         display_help()
-    elif key in k_back:
+    elif key in k_prev_one:
+        #off_screen.append(cols.contents.pop())
+        if off_screen:
+            new_first = off_screen.pop()
+            cols.contents.insert(0, new_first)
+            cols.focus_position=0
+    elif key in k_prev:
         #off_screen.append(cols.contents.pop())
         for x in range(displayed_columns):
             if off_screen:
@@ -144,6 +170,11 @@ def show_or_exit(key):
         # backfill here properly - fill the hole screen (add back as many columns as can be displayed)
         cols.contents = [off_screen.pop() for x in range(displayed_columns) ][::-1]
         txt = '(END)'
+    elif key in k_next_one:
+        if len(cols.contents) > displayed_columns:
+            off_screen.append(cols.contents.pop(0))
+        if len(cols.contents) == displayed_columns:
+            txt = '(END)'
     elif key in k_next:
         for x in range(displayed_columns):
             if len(cols.contents) > displayed_columns:
@@ -238,12 +269,12 @@ else:
     with open(fname) as f:
         text = f.read()
 
-height=45
 
 screen =  screen = urwid.raw_display.Screen()
 max_width, max_height = screen.get_cols_rows()
 
-height = max_height-10
+max_height = max_height- top - bottom
+height = min(max_height, height) if height > 0 else max_height
 
 def make_text(t):
     result = Padding(Text(t, align='left'), ('relative', 100), width, left=2,
@@ -366,7 +397,7 @@ cols = urwid.Columns(piles, dividechars=1, min_width=width)
 
 
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
-fill = urwid.Filler(cols, 'top', top=4)
+fill = urwid.Filler(cols, 'top', top=top_margin)
 total_cols = len(cols.contents)
 displayed_columns = len( cols.column_widths(screen.get_cols_rows()))
 pbar = ProgressBar('pg normal', 'pg complete', displayed_columns, total_cols)

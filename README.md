@@ -6,10 +6,49 @@ more content, less paging
 
 kan-ten: Japanese for word for agar, a gelatinous substance derived from seaweed.
 
-This program was inspired by a similar one called [Tofu][] for OS X, a
+This program was inspired by a similar one called [Tofu]() for OS X, a
 column-based reader application, where the columns are arranged horizontally.
 Given the aspect ratio of computer monitors, I decided to create kanten to be a
 unix pager replacement (more and less) that is not limited to 80 columns.
+
+
+
+Here's what the output of running kanten's motto through `kanten -w 1 -l 7` would look
+like:
+
+k    l    p    m    c
+a    e    a    o    o
+n    s    g    r    n
+t    s    i    e    t
+e         n         e
+n         g         n
+                    T
+
+kanten:          
+less paging 
+more content
+
+echo "kanten:
+
+less paging
+more content
+
+" | kanten -w 7
+
+k n e
+a t n
+
+ka nt en
+
+80 cols
+
+other bylines
+--------------
+...because you have more than 80 columns
+
+terminal [Tofu]()
+
+when [Tofu]()'s too much. (borrowing from [xo]'s "when `nano`'s too much")
 
 possible other names
 --------------------
@@ -39,16 +78,22 @@ TODO
 [ ] all configurable take defaults from ~/.config, but overwritten by params
 [x] configurable number of columns (via -w or --width)
 [x] automatically figure out size (for height, and number of columns)
+[ ] allow settting height from command line
+[ ] implement :set commands (:set height, :set width)
 [ ] 'v' to edit the file (disabled for stdin?)
 [ ] open file to the right line (at least the top-left column's line
 [ ] on exit from editing, refresh the file in kanten
 [ ] run_wrapper to restore previous screen?
     - moar and bpython do this, i think
-[ ] dynamic resizing of width
+[ ] dynamic resizing of width (via + and - commands, perhaps)
+[ ] respond to sigwinch and re-do the number of columns
 [x] param parsing (e.g. add --help)
-[ ] hide the progress bar (ctrl-n is what zathura uses or something?)
+[x] hide the progress bar (ctrl-n is what zathura uses or something?)
+    [x] currently implemented via t
 [ ] add a parameter to disable progress bar
-[ ] add help dialog on ? and possibly h
+[ ] add help dialog on h
+    - not ? - that's reverse search, but h and H and F1
+    [x] easter egg planted
 [x] add : command mode
     [x] support :q
     [ ] support :f for file info
@@ -105,6 +150,7 @@ TODO
     - use a footer / header of the frame widget to do this and :?
     [x] enter do submit footer content
     [x] esc to refocus the window
+    [ ] case insensitive search via -I command line parameter
 [x] highlight words in the text
 [x] highlight searched word (switch to ANSIText?) 
 [ ] parse shell escaped characters properly
@@ -127,6 +173,16 @@ TODO
 [ ] write some tests, with Travis and Coveralls badges in the readme?
 [ ] take a look at what @jlord accomplished with http://jlord.us/horizontal-web/
 [ ] more has a way of listing multiple files
-[ ] respond to sigwinch and re-do the number of columns
 [ ] hide progress bar (perhaps on timeout after paging through)
 [ ] adding a keyboard shortcut should be sure to remove it from others
+[ ] handle really short input gracefully 
+    - put the first column on the left-most position
+[ ] rest and markdown highlighting (if available)
+[ ] use pygments for highlighting, when possible
+[ ] see  what rifle does in ranger - utilize those plugins / handling
+[ ] fix bug for small width and few number of lines (looks ugly, spaces/line
+    breaks are missing)
+[x] clear edit text on motion key
+[ ] kanten.js
+[ ] refactor to remove globals with instance variables
+[ ] write a kanten man page
