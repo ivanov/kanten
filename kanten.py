@@ -7,7 +7,6 @@ import IPython
 
 import sys
 import argparse
-import zlib
 
 from collections import defaultdict
 
@@ -69,10 +68,19 @@ c = lambda x: cmd_line_text.set_caption(x)
 e = lambda x: cmd_line_text.set_edit_text(x)
 
 def help_egg():
-    egg = 'x\x9c\xed\x92\xbfN\xc30\x10\xc6w?\xc5u\xeaR\xf5\x1d@Bj%\xa8\xd8:\xbb\xf1%6M\xceQ\xec\xb4\nO\xcfwv\xa9@bca`\x88\x92\xdc\x9f\xef\xf3\xfd\xce;\xee\xc7\x15\xedI\x98\x1d\xa58\xf0)\xbae\xbb\xdd\x9a\xdd\xd3\xf3\xeb\x8a\x0e1\xd3\xdb\x9c2YY4cv\xa8\xdf\xd0\x12g:K\xbc~m\x8c\xc2\x1b\xf2H\x1bs\xf4,H]m\xd2J\xe9xB\x05\rs\xe3\xef\xff\xd9[\xa1\x1c\x9d]\x8cj\\\x10R%h\xdd\x9c\xd6\xa9\x88Q\x10\x8d@k1\x8fs&5\xcd\x9e\x13\x13Z\x13\xd9\x89\xa9+\xce\xfb\xf5\x80dV\xa3\xc4}K6\xa5ybg\x0e\xe5\x94m\x10\x87\x92\x0bS\x03\xe3\x0e6\xc3B\x83\x06-\x9e8\xb2 4\x8f*M.\xc6)\x992)\rL\xa1-\xe36V\xaaI\xcb\xdc\x07\xe9Pv\x15\xf3\xa0\xb2\xf8$;\x8e\x137\xc1f.\xd5\'\xd6\x92\xf5\x84i\xdd]\xa9\xe3\xac\xb6\x10\xc8t\xb2\xcd\x99\xa2\x14\xc3\xae\x96\x1d\xa3\xacs\xe9\x1e{\xb6\t3\xd5w\xe50\xb0)n\n\x00"}h\x91\x00\xe0\xcfy\xc0)\xfa\x82\xf9\x86+\x99\x97\x05Q\xc7\x18\xce\xb14\x0c.<$@\xa7\x8b\x95\x90\xbc\xb6\xa8\xbd\xb7\xef\\\xd8\xea\x16\x96b\xa0Pr]\xa2\x8e\xab\xb2A\x127 \x8au\x9d\xeb\x12lF\xba\\\x8er\x07\xf4\xe0}8s\xc5\\W\xea\xb0\x1a\xb0h#\xfa\xfe"\xd0\xff\x8bZ\xb9~\xc3\xba\xf9-\xd7\xcd\x0f\x1f1\xfa\x0f\xb5\xec\x84>'
+    from struct import pack
+    magic_number = 0x789ced92bf4ec33010c6773fc575ea52f51d40426a25a8d83abbf125364dce51ecb40a4fcf7776a940626361608892dc9feff3fdce3beec715ed49981da538f029ba65bbdd9addd3f3eb8a0e31d3db9c325959346376a8dfd012673a4bbc7e6d8cc21bf2481b73f42c485d6dd24ae97842050d73e3efffd95ba11c9d5d8c6a5c10522568dd9cd6a98851108d406b318f732635cd9e13135a13d989a92bcefbf5806456a3c47d4b36a57962670ee5946d1087920b5303e30e36c34283062d9e38b220348f2a4d2ec6299932290d4ca12de33656aa49cbdc07e9507615f3a0b2f8243b8e1337c1662ed527d692f58469dd5da9e3acb610c874b2cd99a214c3ae961da3ac73e91e7bb60933d577e530b0296e0a00227d689100e0cf79c029fa82f9862b99970551c718ceb1340c2e3c2440a78b9590bcb6a8bdb7ef5cd8ea169662a050725da28eabb2411237208a759deb126c46ba5c8e7207f4e07d3873c55c57eab01ab06823fafe22d0ff8b5ab97ec3baf92dd7cd0f1f31fa0fb5ec843e
+    # yes it is! it's a magic number! 3-6-9, 12-15-18, 21-24-27, 30!
+    egg =  zip(*([iter(format(magic_number, 'x'))] * 2))
+    egg = pack('B'*(len(egg)), *[int(''.join(x), 16) for x in egg])
+    try:
+        import zlib
+    except ImportError:
+        while True:
+            yield "no zlib? I'm afraid no one can help you :\\"
     while True:
         for m in zlib.decompress(egg).split('\n'):
-            yield m.lstrip()
+            yield m
 help = help_egg()
 
 def display_help(args=None):

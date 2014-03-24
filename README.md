@@ -80,8 +80,10 @@ TODO
 [x] automatically figure out size (for height, and number of columns)
 [ ] allow settting height from command line
 [ ] implement :set commands (:set height, :set width)
-[ ] 'v' to edit the file (disabled for stdin?)
-[ ] open file to the right line (at least the top-left column's line
+[ ] 'v' to edit the file 
+    - disabled for stdin? at least if EOF not encountered
+[ ] open file to the right line (at least the top-left column's line)
+    - set cursor location either via search or mouseclick
 [ ] on exit from editing, refresh the file in kanten
 [ ] run_wrapper to restore previous screen?
     - moar and bpython do this, i think
