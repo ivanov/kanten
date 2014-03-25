@@ -188,3 +188,19 @@ TODO
 [ ] kanten.js
 [ ] refactor to remove globals with instance variables
 [ ] write a kanten man page
+[ ] -F or --quit-if-one-screen
+       Causes less to automatically exit if the entire file can be dis‐
+       played on the first screen.
+[ ] -i or --ignore-case
+       Causes searches to ignore case; that is, uppercase and lowercase
+       are  considered identical.  This option is ignored if any upper‐
+       case letters appear in the search pattern; in other words, if  a
+       pattern  contains  uppercase  letters, then that search does not
+       ignore case.
+[ ] -I or --IGNORE-CASE
+       Like -i, but searches ignore case even if the  pattern  contains
+       uppercase letters.
+[ ] add \c and \C (insensitive and sensitive, respectively) to the
+   search parsing
+[ ] support set ignorecase? set smartcase?
+
