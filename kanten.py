@@ -141,7 +141,6 @@ def show_or_exit(key):
     global do_cmd
     # clear out old messages
     txt = ''
-    cmd_line_text.set_edit_text('') 
 
     # set the progress bar visibility, so info can set it just once
     pbh.send(show)
@@ -241,6 +240,7 @@ def show_or_exit(key):
     cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
     pbar.set_completion(len(off_screen)+displayed_columns)
+    cmd_line_text.set_edit_text('') 
 
 show = True
 def progress_bar_handler():
