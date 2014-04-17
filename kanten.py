@@ -63,6 +63,8 @@ k_escape = ('esc',)
 k_quit = ('q', 'Q')
 # not sure if 'h' not being mapped to 'left' is a good idea
 k_help = ('h', 'H', 'f1') 
+k_diff = ('d',)     # enable diff highlighting
+k_diff_off = ('D',) # disable diff highlighting
 
 c = lambda x: cmd_line_text.set_caption(x)
 e = lambda x: cmd_line_text.set_edit_text(x)
@@ -227,6 +229,10 @@ def show_or_exit(key):
         rehighlight(txts,'the')
         # focus last result only if found
         pass
+    elif key in k_diff:
+        rehighlight(txts, '', search=search_diff)
+    elif key in k_diff_off:
+        rehighlight(txts, '', search=search_noop)
     elif key in k_info:
         txt = fname
         txt += "  (%d / %d)" % (total_cols-len(cols.contents) +
@@ -302,7 +308,18 @@ def search(text, word):
     # N. B. this approach adds a superflous trailing match
     return res[:-1]
 
-def rehighlight(txts, s):
+def search_diff(text, word=None):
+    if text.startswith('+'):
+        return [('diff new', text)]
+    elif text.startswith('-'):
+        return [('diff old', text)]
+    else:
+        return text
+
+def search_noop(text, word):
+    return text
+
+def rehighlight(txts, s, search=search):
     [t.original_widget.set_text(search(t.original_widget.text, s)) for t in txts]
 
 
@@ -386,6 +403,8 @@ palette = [
     ('options', 'dark gray', 'black'),
     ('focus heading', 'white', 'dark red'),
     ('focus line', 'black', 'dark red'),
+    ('diff old', 'dark red', 'black'),
+    ('diff new', 'dark green', 'black'),
     ('focus options', 'black', 'light gray'),
     ('pg normal',    'white',      'black', 'standout'),
     ('pg complete',  'white',      'dark magenta'),

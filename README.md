@@ -155,6 +155,8 @@ TODO
     [ ] case insensitive search via -I command line parameter
 [x] highlight words in the text
 [x] highlight searched word (switch to ANSIText?) 
+[x] highlight diff output (via 'd', disable with 'D')
+    [ ] detect diff output 
 [ ] parse shell escaped characters properly
     - so we can read man pages
     - look at the piped output of grep --color=always
@@ -181,6 +183,7 @@ TODO
     - put the first column on the left-most position
 [ ] rest and markdown highlighting (if available)
 [ ] use pygments for highlighting, when possible
+    [ ] detect filetype
 [ ] see  what rifle does in ranger - utilize those plugins / handling
 [ ] fix bug for small width and few number of lines (looks ugly, spaces/line
     breaks are missing)
@@ -203,4 +206,4 @@ TODO
 [ ] add \c and \C (insensitive and sensitive, respectively) to the
    search parsing
 [ ] support set ignorecase? set smartcase?
-
+[ ] can't click to select text in xterm
