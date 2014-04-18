@@ -80,8 +80,11 @@ TODO
 [x] automatically figure out size (for height, and number of columns)
 [ ] allow settting height from command line
 [ ] implement :set commands (:set height, :set width)
-[ ] 'v' to edit the file 
+[x] 'v' to edit the file , just like less
     - disabled for stdin? at least if EOF not encountered
+    - wouldn't support editing stdin
+    [x] respect $EDITOR, use vim if EDITOR not set
+        [ ] would be even better if we check if vim exists, use vi otherwise
 [ ] open file to the right line (at least the top-left column's line)
     - set cursor location either via search or mouseclick
 [ ] on exit from editing, refresh the file in kanten
@@ -119,8 +122,6 @@ TODO
     [x] ctrl-g for file info
 [ ] (maybe) implement marking system (top lines?)
     - like less, marks will only live for duration of program execution
-[ ] (maybe) support 'v' to edit, like less
-    - wouldn't support editing stdin, just like less
 [ ] support jumping to a particular line
     - would go along with editing a file at that line
     - and allow us to jump back into the same line after editing?
@@ -158,8 +159,8 @@ TODO
 [x] highlight searched word (switch to ANSIText?) 
 [x] highlight diff output (via 'd', disable with 'D')
     [ ] detect diff output 
-    [ ] toggle it via :set ft=diff
-    [ ] do we handle diff lines that span multiple columns properly?
+    [x] toggle it via :set ft=diff
+    [ ] handle diff lines that span multiple columns properly 
 [ ] parse shell escaped characters properly
     - so we can read man pages
     - look at the piped output of grep --color=always
@@ -195,6 +196,7 @@ TODO
 [ ] kanten.js
 [ ] refactor to remove globals with instance variables
 [ ] write a kanten man page
+    [ ] add section for COMPATIBILITY WITH MORE and COMPATIBILITY WITH LESS
 [ ] -F or --quit-if-one-screen
        Causes less to automatically exit if the entire file can be dis‐
        played on the first screen.
@@ -210,4 +212,6 @@ TODO
 [ ] add \c and \C (insensitive and sensitive, respectively) to the
    search parsing
 [ ] support set ignorecase? set smartcase?
+[ ] add saveas (to save STDIN input)
 [ ] can't click to select text in xterm
+

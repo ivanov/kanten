@@ -47,7 +47,8 @@ else:
 kanten_default_options = dict(
     filetype='',
     number=False,
-    incsearch=False
+    incsearch=False,
+    editor=os.environ.get('EDITOR', 'vim')
     )
 
 kanten_options = kanten_default_options.copy()
@@ -91,6 +92,7 @@ k_quit = ('q', 'Q')
 k_help = ('h', 'H', 'f1') 
 k_diff = ('d',)     # enable diff highlighting
 k_diff_off = ('D',) # disable diff highlighting
+k_editor = ('v',) # launch the $EDITOR
 
 c = lambda x: cmd_line_text.set_caption(x)
 e = lambda x: cmd_line_text.set_edit_text(x)
@@ -357,6 +359,9 @@ def show_or_exit(key):
     elif key in k_toggle_pbar:
         show = not show
         pbh.send(show)
+    elif key in k_editor:
+        editor = kanten_options['editor']
+        os.spawnvp(os.P_WAIT, editor, [editor, fname])
     cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
     pbar.set_completion(len(off_screen)+displayed_columns)
