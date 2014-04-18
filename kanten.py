@@ -5,6 +5,7 @@ DEBUG = False
 # debugging only
 import IPython
 
+import os
 import sys
 import argparse
 
@@ -42,6 +43,31 @@ if not args.filenames:
     fname = '/home/pi/cur/das.txt'
 else:
     fname = args.filenames[0]
+
+kanten_default_options = dict(
+    filetype='',
+    number=False,
+    incsearch=False
+    )
+
+kanten_options = kanten_default_options.copy()
+
+options_map = {
+        'ft':'filetype',
+        'nu':'number',
+        'is':'incsearch',
+        }
+
+# crude "filetype" detection
+if os.path.splitext(fname)[-1] in ('.diff', '.patch'):
+    kanten_options['filetype'] = 'diff'
+
+def opt_name(name):
+    "Translate short names to their full equivalents"
+    if name in options_map:
+        return options_map[name]
+    else:
+        return name
 
 off_screen = []
 
@@ -106,6 +132,91 @@ def info(args):
 def cmd_not_found(args):
     e('not a kanten command: ' + ' '.join(args))
 
+def set_cmd(args):
+    """
+    Set various aspects about how kanten behaves. A lot of the syntax and
+    semantics are borrowed from Vim's `:help set`
+
+    :se[t]              Show all options that differ from their default values
+    :se[t] all          Show all options that differ from their default values
+
+    :se[t] {option}     Toggle option: set, switch it on.
+                        Number option: show value.
+                        String option: show value.
+
+    :se[t] no{option}   Toggle option: Reset, switch it off.
+
+    :se[t] {option}!    Toggle option: Invert value.
+    :se[t] inv{option}  Toggle option: Invert value.
+    
+    :se[t] {opt}={val}  Set string or number option {opt} to {val}.
+    :se[t] {opt}:{val}  Set string or number option {opt} to {val}.
+
+    :se[t] all          Reset all options to their default kanten values
+    :se[t] all&less     Reset all options to emulate `less`
+    :se[t] all&more     Reset all options to emulate `more`
+
+    The {option} arguments to ":set" may be repeated.  For example:
+            :set ft=diff nu
+    """
+    if len(args) == 1:
+        ret =''
+        for key,val in kanten_options.items():
+            # skip entries which are default values
+            #if val == kanten_default_options[key]:
+            #    continue
+            if val not in (True, False):
+                ret += key + '=' + val
+            else:
+                ret += key if val else 'no' + key
+            ret+="    "
+        c(ret)
+    for arg in args[1:]:
+        invert, negate = False, False
+        idx = arg.find('=')
+        idx2 = arg.find(':')
+        if idx < 0 and idx2 < 0 :
+            if arg.startswith('inv'):
+                arg = arg[3:]
+                invert = True
+            if arg.startswith('no'):
+                arg = arg[2:]
+                negate = True
+            arg = opt_name(arg)
+            val = kanten_options.get(arg, ' unknown option')
+            if val not in (True, False):
+                msg =  '  ' + arg+ '=' + val
+            else:
+                # set it
+                val = not val if invert else True
+                val = False if negate else val
+                kanten_options[arg] = val
+                msg = arg if val else 'no' + arg
+                msg = ':set ' + msg
+            c(msg)
+            continue
+        if idx > 0 and idx2 > 0:
+            chomp = min(idx, idx2)
+        else: # only one of the args is non-negative
+            chomp = max(idx, idx2)
+        lhs,rhs = arg[:chomp],arg[chomp+1:]
+        arg = opt_name(lhs)
+        if kanten_options[arg] in (True, False):
+            c("Cannot assign, use 'set %s', 'set no%s'" % (arg, arg))
+        else:
+            kanten_options[arg] = rhs
+            #XXX: turning into spaghetti code here, but what can you do?
+            #   - make a callback (reactive) options dictionary?
+            if arg == 'filetype' and rhs == 'diff':
+                rehighlight(txts, '', search=search_diff)
+            elif arg == 'filetype':
+                #XXX: add pygments-based highlighting here for other files
+                rehighlight(txts, '', search=search_noop)
+    return True # by returning True, the cmd_line_text won't get reset to ''
+
+def search_replace(args):
+    pass
+
 # All dispatch commands should return True only if the rest of the
 # show_or_exit method should be skipped after they are performed.
 colon_dispatch_defaults = {
@@ -120,12 +231,15 @@ colon_dispatch_defaults = {
         'edit'  : edit,
         'f'     : edit,
         'file'  : edit,
+        'set'   : set_cmd,
+        'se '   : set_cmd,
+        's'     : search_replace,
         }
 colon_dispatch = defaultdict(lambda: cmd_not_found, colon_dispatch_defaults)
         
 
 def colon(cmd):
-    c('would have run' + cmd)
+    #c('would have run' + cmd)
     args = cmd.split()
     if args: # :<enter> will give a blank line as a cmd
         return colon_dispatch[args[0].lower()](args)

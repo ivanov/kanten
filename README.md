@@ -153,10 +153,13 @@ TODO
     [x] enter do submit footer content
     [x] esc to refocus the window
     [ ] case insensitive search via -I command line parameter
+    [ ] incremental search via incsearch
 [x] highlight words in the text
 [x] highlight searched word (switch to ANSIText?) 
 [x] highlight diff output (via 'd', disable with 'D')
     [ ] detect diff output 
+    [ ] toggle it via :set ft=diff
+    [ ] do we handle diff lines that span multiple columns properly?
 [ ] parse shell escaped characters properly
     - so we can read man pages
     - look at the piped output of grep --color=always
@@ -175,6 +178,7 @@ TODO
 [ ] bash completion for flags (is there one for python  ArgParse code already?)
     - yeap! use https://github.com/kislyuk/argcomplete
 [ ] write some tests, with Travis and Coveralls badges in the readme?
+    [ ] look at how pudb xo and other urwid apps do testing
 [ ] take a look at what @jlord accomplished with http://jlord.us/horizontal-web/
 [ ] more has a way of listing multiple files
 [ ] hide progress bar (perhaps on timeout after paging through)
