@@ -70,6 +70,8 @@ TODO
 [x] reading from stdin
 [x] process keyboard shortcuts after reading from stdin (the way less does)
 [ ] read buffering (don't read the whole file before filling in)
+    - MUSTFIX for sane STDIN piping (e.g. git log | kanten)
+    - urwid's edit.py has an example of lazy loading
 [ ] double spacing option for easier reading?
 [x] specifying a filename from commandline
 [ ] demo file that explains kanten (tutorial)
@@ -99,11 +101,14 @@ TODO
 [ ] add help dialog on h
     - not ? - that's reverse search, but h and H and F1
     [x] easter egg planted
+    [x] :help should work
 [x] add : command mode
     [x] support :q
-    [ ] support :f for file info
+    [x] support :f for file info
     [ ] don't allow deletion of ':' prompt in command mode
-    [ ] backspace in command mode should leave it?
+    [ ] backspace in command mode should leave it? (like vim
+    ( ) history (up and down arrows)
+    ( ) q: and :^F command buffer?
 [ ] (maybe) support multiple buffers?
     - :n and :p (or :N) for next and previous
     [ ] :e to read a different file?
@@ -114,7 +119,7 @@ TODO
     [x] z and w
     [x] j and k (page-wise OK)
     [x] = to show file name / info (ctrl-g should also work)
-        [ ] ctrl-g should show status bar only once
+        [x] ctrl-g should show status bar only once
     [ ] others?
     [ ] F - forward forever (for stdin)
 [ ] control key combos
@@ -214,4 +219,4 @@ TODO
 [ ] support set ignorecase? set smartcase?
 [ ] add saveas (to save STDIN input)
 [ ] can't click to select text in xterm
-
+[ ] center single column

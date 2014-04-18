@@ -14,6 +14,7 @@ from collections import defaultdict
 import urwid
 from urwid import Padding, Text, Pile, ProgressBar
 
+__version__ = '0.1.0'
 
 parser = argparse.ArgumentParser(description='A more aesthetic pager')
 parser.add_argument('filenames', metavar='f', nargs='*',
@@ -90,11 +91,13 @@ k_escape = ('esc',)
 k_quit = ('q', 'Q')
 # not sure if 'h' not being mapped to 'left' is a good idea
 k_help = ('h', 'H', 'f1') 
+k_version = ('V',)
 k_diff = ('d',)     # enable diff highlighting
 k_diff_off = ('D',) # disable diff highlighting
 k_editor = ('v',) # launch the $EDITOR
 
 c = lambda x: cmd_line_text.set_caption(x)
+#c = lambda x: cmd_line_prompt.set_text(x)
 e = lambda x: cmd_line_text.set_edit_text(x)
 
 def help_egg():
@@ -113,8 +116,26 @@ def help_egg():
             yield m
 help = help_egg()
 
+exit_font = urwid.font.HalfBlock7x7Font
+
+def display_version(args=None):
+    ver = urwid.BigText(('ver'," kanten v" + __version__), exit_font())
+    ver = urwid.Overlay(ver, loop.widget, 'center', 'pack', 'middle', 'pack',)
+    loop.widget= exit
+    return True
+
 def display_help(args=None):
-    e(help.next())
+    c(help.next())
+    exit = urwid.BigText(('exit'," kanten v" + __version__), exit_font())
+    #exit = urwid.Pile([exit, ])
+    #exit = urwid.Padding(exit,('relative', 100), width, left=2, right=2 )
+    exit = urwid.Overlay(exit, loop.widget, 'center', 'pack', 'middle', 'pack',)
+                #min_width=20, min_height=5)
+    # TODO: maybe do some overlay later - inserting into col content is pretty
+    # good for now
+    #cols.contents.insert(0, exit)
+    loop.widget= exit
+    return True
 
 def quit(args):
     if '!' in args[0] or 'a' in args[0]:
@@ -263,6 +284,8 @@ def show_or_exit(key):
     # set the progress bar visibility, so info can set it just once
     pbh.send(show)
 
+    if isinstance(loop.widget, urwid.Overlay):
+        loop.widget = loop.widget[0] # pop off the overlay
     if key != '.':
         last_key = key
     else:
@@ -271,6 +294,10 @@ def show_or_exit(key):
         raise urwid.ExitMainLoop()
     elif key in k_help:
         display_help()
+        return True
+    elif key in k_version:
+        display_version()
+        return True
     elif key in k_prev_one:
         #off_screen.append(cols.contents.pop())
         if off_screen:
@@ -319,10 +346,12 @@ def show_or_exit(key):
         do_cmd = lambda x: rehighlight(txts, x)
         cmd_line_text.set_edit_text('')
     elif key in k_command:
-        txt = ':'
+        #txt = ':'
+        c(':')
         all.set_focus('footer')
-        cmd_line_text.set_edit_text('')
+        #cmd_line_text.set_edit_text('')
         do_cmd = colon
+        return
     elif key in k_submit:
         if all.get_focus() == 'footer':
             input = cmd_line_text.get_edit_text()
@@ -548,19 +577,22 @@ total_cols = len(cols.contents)
 displayed_columns = len( cols.column_widths(screen.get_cols_rows()))
 pbar = ProgressBar('pg normal', 'pg complete', displayed_columns, total_cols)
 p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
-cmd_line_text = urwid.Text(fname)
-cmd_line = urwid.Filler(cmd_line_text, bottom=1)
-#cmd_line = urwid.Overlay(cmd_line, p, 'center', None, 'middle', None)
 
-all = Pile([ fill, (1, p), ]) #(1, cmd_line) ] )
+all = Pile([ fill, (1, p), ]) 
 cmd_line_text = urwid.Edit(fname)
+#cmd_line_prompt = urwid.Text('hi there')
+#cmd_line_combined = urwid.Filler([cmd_line_prompt, cmd_line_text])
+#all = urwid.Frame(body=all, footer=cmd_line_combined)
 all = urwid.Frame(body=all, footer=cmd_line_text)
 loop = urwid.MainLoop(all, palette, screen, unhandled_input=show_or_exit)
-loop.cmd = cmd_line
+loop.exit = urwid.Text(" Help? ")
 
 #IPython.embed()
 
 loop.run()
+
+import IPython
+#IPython.embed()
 
 if DEBUG:
     for p in piles:
