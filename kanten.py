@@ -440,7 +440,9 @@ if not sys.stdin.isatty():
     fname = 'STDIN'
     # XXX: try to guess about the input using pygments
     if have_pygments:
-        lexer = pygments.lexers.guess_lexer(text)
+        # since pygments' detection can be terrible, no point in giving it the
+        # whole file.
+        lexer = pygments.lexers.guess_lexer(text[:80])
 
 else:
     with open(fname) as f:
