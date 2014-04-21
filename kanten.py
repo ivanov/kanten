@@ -14,6 +14,13 @@ from collections import defaultdict
 import urwid
 from urwid import Padding, Text, Pile, ProgressBar
 
+try:
+    import pygments
+    import pygments.lexers
+    have_pygments = True
+except ImportError:
+    have_pygments = False
+
 __version__ = '0.1.0'
 
 parser = argparse.ArgumentParser(description='A more aesthetic pager')
@@ -30,7 +37,9 @@ parser.add_argument( '-t','--top', dest='top', metavar='N', type=int,
                    help='the number of lines to leave blank at the top')
 parser.add_argument( '-b','--bottom', dest='bottom', metavar='N', type=int,
                    default='4',
-                   help='the number of lines to leave blank at the bototm')
+                   help='the number of lines to leave blank at the bottom')
+parser.add_argument( '-d','--diff', dest='diff', action='store_true',
+        help='start in diff mode (same as :set ft=diff)')
 
 args = parser.parse_args()
 width= args.width
@@ -61,7 +70,7 @@ options_map = {
         }
 
 # crude "filetype" detection
-if os.path.splitext(fname)[-1] in ('.diff', '.patch'):
+if os.path.splitext(fname)[-1] in ('.diff', '.patch') or args.diff:
     kanten_options['filetype'] = 'diff'
 
 def opt_name(name):
@@ -380,7 +389,9 @@ def show_or_exit(key):
         rehighlight(txts, '', search=search_noop)
     elif key in k_info:
         txt = fname
-        txt += "  (%d / %d)" % (total_cols-len(cols.contents) +
+        if kanten_options['filetype']:
+            txt += " (ft=" + kanten_options['filetype'] + ")"
+        txt += " (%d / %d)" % (total_cols-len(cols.contents) +
                 displayed_columns , total_cols)
         if len(cols.contents) == displayed_columns:
             txt += ' (END)'
@@ -427,10 +438,16 @@ if not sys.stdin.isatty():
     sys.__stdin__ = sys.stdin = open('/dev/tty')
     os.dup2(sys.stdin.fileno(), 0)
     fname = 'STDIN'
+    # XXX: try to guess about the input using pygments
+    if have_pygments:
+        lexer = pygments.lexers.guess_lexer(text)
+
 else:
     with open(fname) as f:
         text = f.read()
 
+    if have_pygments:
+        lexer = pygments.lexers.get_lexer_for_filename(fname)
 
 screen =  screen = urwid.raw_display.Screen()
 max_width, max_height = screen.get_cols_rows()
@@ -476,7 +493,7 @@ txts = [make_text(t) for t in text.split('\n')]
 #s = search(text, 'all')
 #txts = [make_text(list(t)) for t in zip(s[::3], s[1::3], s[2::3])]
 #[t.original_widget.set_text(search(t.original_widget.text, 'all')) for t in txts]
-rehighlight(txts,'all')
+#rehighlight(txts,'all')
 #if DEBUG:
 #    # my brain finds it easier to deal with boxes
 #    txts = [urwid.LineBox(t) for t in txts]
@@ -527,6 +544,7 @@ for t in txts[:]:
         # start the next column
         p_new = Pile([])
         t_extra = trim(t, d, width)
+        # TODO: include diff status in here, and line numbers
         p_new.contents.append((t_extra, p.options()))
         p = p_new
         t = t_extra
@@ -588,6 +606,11 @@ loop = urwid.MainLoop(all, palette, screen, unhandled_input=show_or_exit)
 loop.exit = urwid.Text(" Help? ")
 
 #IPython.embed()
+if args.diff:
+    set_cmd("set ft=diff".split())
+elif have_pygments:
+    set_cmd(("set ft=" + lexer.name.lower()).split())
+
 
 loop.run()
 

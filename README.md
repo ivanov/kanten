@@ -165,6 +165,8 @@ TODO
 [x] highlight diff output (via 'd', disable with 'D')
     [ ] detect diff output 
     [x] toggle it via :set ft=diff
+    [x] force diff output with -d flag
+    [x] use diff output when openining .diff and .patch files
     [ ] handle diff lines that span multiple columns properly 
 [ ] parse shell escaped characters properly
     - so we can read man pages
@@ -193,7 +195,9 @@ TODO
     - put the first column on the left-most position
 [ ] rest and markdown highlighting (if available)
 [ ] use pygments for highlighting, when possible
-    [ ] detect filetype
+    [ ] detect filetype, at least by filename
+    [x] .diff and .patch for ft=diff
+    [ ] .py for ft=python
 [ ] see  what rifle does in ranger - utilize those plugins / handling
 [ ] fix bug for small width and few number of lines (looks ugly, spaces/line
     breaks are missing)
@@ -220,3 +224,6 @@ TODO
 [ ] add saveas (to save STDIN input)
 [ ] can't click to select text in xterm
 [ ] center single column
+[ ] version string
+    [ ] :version command
+[ ] corner cases when -t and -b \lim 0
