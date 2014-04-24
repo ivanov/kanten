@@ -72,6 +72,8 @@ TODO
 [ ] read buffering (don't read the whole file before filling in)
     - MUSTFIX for sane STDIN piping (e.g. git log | kanten)
     - urwid's edit.py has an example of lazy loading
+[ ] mouse interactions broken in xterm after sleeping kanten - what gives?
+    - cannot select text even after sleeping kanten
 [ ] double spacing option for easier reading?
 [x] specifying a filename from commandline
 [ ] demo file that explains kanten (tutorial)
@@ -80,16 +82,17 @@ TODO
 [ ] all configurable take defaults from ~/.config, but overwritten by params
 [x] configurable number of columns (via -w or --width)
 [x] automatically figure out size (for height, and number of columns)
-[ ] allow settting height from command line
-[ ] implement :set commands (:set height, :set width)
+[x] allow setting height from command line
+[x] implement :set commands
+    (:set height, :set width)
 [x] 'v' to edit the file , just like less
     - disabled for stdin? at least if EOF not encountered
     - wouldn't support editing stdin
     [x] respect $EDITOR, use vim if EDITOR not set
         [ ] would be even better if we check if vim exists, use vi otherwise
+    [ ] on exit from editing, refresh the file in kanten
 [ ] open file to the right line (at least the top-left column's line)
     - set cursor location either via search or mouseclick
-[ ] on exit from editing, refresh the file in kanten
 [ ] run_wrapper to restore previous screen?
     - moar and bpython do this, i think
 [ ] dynamic resizing of width (via + and - commands, perhaps)
@@ -189,13 +192,13 @@ TODO
     [ ] look at how pudb xo and other urwid apps do testing
 [ ] take a look at what @jlord accomplished with http://jlord.us/horizontal-web/
 [ ] more has a way of listing multiple files
-[ ] hide progress bar (perhaps on timeout after paging through)
+[x] hide progress bar (perhaps on timeout after paging through)
 [ ] adding a keyboard shortcut should be sure to remove it from others
 [ ] handle really short input gracefully 
     - put the first column on the left-most position
 [ ] rest and markdown highlighting (if available)
 [ ] use pygments for highlighting, when possible
-    [ ] detect filetype, at least by filename
+    [x] detect filetype, at least by filename
     [x] .diff and .patch for ft=diff
     [ ] .py for ft=python
 [ ] see  what rifle does in ranger - utilize those plugins / handling
@@ -227,3 +230,5 @@ TODO
 [ ] version string
     [ ] :version command
 [ ] corner cases when -t and -b \lim 0
+[ ] for ipython: register .ipynb as a json lexer-able thing
+    pygments.lexers.web.JsonLexer

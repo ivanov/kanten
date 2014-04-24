@@ -402,6 +402,8 @@ def show_or_exit(key):
     elif key in k_editor:
         editor = kanten_options['editor']
         os.spawnvp(os.P_WAIT, editor, [editor, fname])
+    elif isinstance(key, tuple):
+        txt = "unhandled key " + str(key)
     cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
     pbar.set_completion(len(off_screen)+displayed_columns)
@@ -443,13 +445,22 @@ if not sys.stdin.isatty():
         # since pygments' detection can be terrible, no point in giving it the
         # whole file.
         lexer = pygments.lexers.guess_lexer(text[:80])
+        # the lexer guesser sucks and will say anything it's confused about is
+        # Prolog? No.
+        if lexer.name == "Prolog":
+            lexer = pygments.lexers.TextLexer # null / noop lexer
 
 else:
     with open(fname) as f:
         text = f.read()
 
     if have_pygments:
-        lexer = pygments.lexers.get_lexer_for_filename(fname)
+        try:
+            lexer = pygments.lexers.get_lexer_for_filename(fname)
+        except pygments.util.ClassNotFound:
+            # TODO: if ipynb, treat it as json
+            # lexer = pygments.lexers.web.JsonLexer #XXX placeholder
+            lexer = pygments.lexers.TextLexer # null / noop lexer
 
 screen =  screen = urwid.raw_display.Screen()
 max_width, max_height = screen.get_cols_rows()
@@ -611,7 +622,7 @@ loop.exit = urwid.Text(" Help? ")
 if args.diff:
     set_cmd("set ft=diff".split())
 elif have_pygments:
-    set_cmd(("set ft=" + lexer.name.lower()).split())
+    set_cmd(("set ft=" + lexer.name.split()[0].lower()).split())
 
 
 loop.run()
