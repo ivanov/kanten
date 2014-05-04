@@ -21,7 +21,7 @@ try:
 except ImportError:
     have_pygments = False
 
-__version__ = '0.1.0'
+__version__ = '0.5.0'
 
 parser = argparse.ArgumentParser(description='A more aesthetic pager')
 parser.add_argument('filenames', metavar='f', nargs='*',
@@ -138,7 +138,8 @@ def display_help(args=None):
     exit = urwid.BigText(('exit'," kanten v" + __version__), exit_font())
     #exit = urwid.Pile([exit, ])
     #exit = urwid.Padding(exit,('relative', 100), width, left=2, right=2 )
-    exit = urwid.Overlay(exit, loop.widget, 'center', 'pack', 'middle', 'pack',)
+    exit = urwid.Overlay(exit, loop.widget, 'center', 'pack', ('relative',90), 'pack',
+            min_height=15)
                 #min_width=20, min_height=5)
     # TODO: maybe do some overlay later - inserting into col content is pretty
     # good for now
@@ -305,7 +306,8 @@ def show_or_exit(key):
         display_help()
         return True
     elif key in k_version:
-        display_version()
+        #display_version()
+        display_help()
         return True
     elif key in k_prev_one:
         #off_screen.append(cols.contents.pop())
@@ -377,10 +379,8 @@ def show_or_exit(key):
             all.set_focus('body')
     elif key in k_next_search:
         # focus pane with a next result only if found
-        rehighlight(txts,'com')
         pass
     elif key in k_prev_search:
-        rehighlight(txts,'the')
         # focus last result only if found
         pass
     elif key in k_diff:

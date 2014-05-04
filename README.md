@@ -97,6 +97,7 @@ TODO
     - moar and bpython do this, i think
 [ ] dynamic resizing of width (via + and - commands, perhaps)
 [ ] respond to sigwinch and re-do the number of columns
+    - number displayed changed, so the pbar needs an update
 [x] param parsing (e.g. add --help)
 [x] hide the progress bar (ctrl-n is what zathura uses or something?)
     [x] currently implemented via t
@@ -232,3 +233,4 @@ TODO
 [ ] corner cases when -t and -b \lim 0
 [ ] for ipython: register .ipynb as a json lexer-able thing
     pygments.lexers.web.JsonLexer
+[ ] swallow last empty panel in the banner
