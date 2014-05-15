@@ -6,6 +6,8 @@ more content, less paging
 
 kan-ten: Japanese for word for agar, a gelatinous substance derived from seaweed.
 
+A program for reading in the terminal. A pager for the early 90s?
+
 This program was inspired by a similar one called [Tofu]() for OS X, a
 column-based reader application, where the columns are arranged horizontally.
 Given the aspect ratio of computer monitors, I decided to create kanten to be a
@@ -96,6 +98,10 @@ TODO
     - set cursor location either via search or mouseclick
     - mouseclick should un-highlight the current match of search (if any) and
       highlight the whole line instead
+      - actually - it might make sense to just use widget focus infrastructure
+        for this in urwid?
+    [ ] mouse click column detection is off by the size of the margins
+        - find it from window_width % column_width / num_columns
 [ ] run_wrapper to restore previous screen?
     - moar and bpython do this, i think
 [ ] dynamic resizing of width (via + and - commands, perhaps)

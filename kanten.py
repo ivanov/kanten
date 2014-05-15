@@ -82,6 +82,7 @@ def opt_name(name):
 
 off_screen = []
 
+k_debug = ('ctrl k', 'backspace')
 k_next = (' ', 'f', 'z', 'l',  'ctrl f', 'ctrl v', 'right', 'down', 'page down')
 k_prev = ('b', 'B', 'w', 'ctrl b', 'left', 'up', 'page up')
 k_next_one = ('j', 'ctrl y')
@@ -107,6 +108,7 @@ k_editor = ('v',) # launch the $EDITOR
 m_scroll_up = (4,)   # scroll up
 m_scroll_down = (5,) # launch the $EDITOR
 m_paste = (2,) # launch the $EDITOR
+m_click = (1,) # launch the $EDITOR
 
 c = lambda x: cmd_line_text.set_caption(x)
 #c = lambda x: cmd_line_prompt.set_text(x)
@@ -415,10 +417,17 @@ def show_or_exit(key):
             show_or_exit(k_next[0])
         elif key[1] in m_scroll_down: 
             show_or_exit(k_prev[0])
+        elif key[1] in m_click: 
+            column = xpos_to_col(key[-2])
+
+
+            txt = "click in column %d, line %d" % (column, key[-1])
         elif key[1] in m_paste:
             txt = "we would paste X11 clipboard contents here"
         else:
             txt = "unhandled key " + str(key)
+    elif key in k_debug:
+        IPython.embed_kernel()
     elif isinstance(key, tuple):
         txt = "unhandled key " + str(key)
     else:
@@ -624,8 +633,20 @@ cols = urwid.Columns(piles, dividechars=1, min_width=width)
 #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
 fill = urwid.Filler(cols, 'top', top=top_margin)
 total_cols = len(cols.contents)
-displayed_columns = len( cols.column_widths(screen.get_cols_rows()))
+col_widths = cols.column_widths(screen.get_cols_rows())
+displayed_columns = len( col_widths )
+
+# XXX: this is not the full story, it ignores the borders between columns
+c_columns = map(lambda i: sum(col_widths[:i+1]), range(displayed_columns))
+border = (max_width - c_columns[-1]) /  displayed_columns
+def xpos_to_col(pos):
+    for i,c in enumerate(c_columns):
+        if pos < (c + i * border):
+            return i
+
 pbar = ProgressBar('pg normal', 'pg complete', displayed_columns, total_cols)
+
+
 p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
 
 all = Pile([ fill, (1, p), ]) 
