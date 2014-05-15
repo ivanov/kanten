@@ -82,12 +82,12 @@ def opt_name(name):
 
 off_screen = []
 
-k_next = (' ', 'f', 'z', 'l',  'ctrl f', 'ctrl v')
-k_prev = ('b', 'B', 'w', 'ctrl b')
+k_next = (' ', 'f', 'z', 'l',  'ctrl f', 'ctrl v', 'right', 'down', 'page down')
+k_prev = ('b', 'B', 'w', 'ctrl b', 'left', 'up', 'page up')
 k_next_one = ('j', 'ctrl y')
 k_prev_one = ('k', 'ctrl e')
-k_top = ('g', '<', 'p')
-k_end = ('G', '>')
+k_top = ('g', '<', 'p', 'home')
+k_end = ('G', '>', 'end')
 k_info = ('ctrl g', '=')
 k_search = ('/',)
 k_search_bw = ('?',)
@@ -106,6 +106,7 @@ k_diff_off = ('D',) # disable diff highlighting
 k_editor = ('v',) # launch the $EDITOR
 m_scroll_up = (4,)   # scroll up
 m_scroll_down = (5,) # launch the $EDITOR
+m_paste = (2,) # launch the $EDITOR
 
 c = lambda x: cmd_line_text.set_caption(x)
 #c = lambda x: cmd_line_prompt.set_text(x)
@@ -414,9 +415,13 @@ def show_or_exit(key):
             show_or_exit(k_next[0])
         elif key[1] in m_scroll_down: 
             show_or_exit(k_prev[0])
+        elif key[1] in m_paste:
+            txt = "we would paste X11 clipboard contents here"
         else:
             txt = "unhandled key " + str(key)
     elif isinstance(key, tuple):
+        txt = "unhandled key " + str(key)
+    else:
         txt = "unhandled key " + str(key)
     cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)

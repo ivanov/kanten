@@ -195,6 +195,7 @@ TODO
     - yeap! use https://github.com/kislyuk/argcomplete
 [ ] write some tests, with Travis and Coveralls badges in the readme?
     [ ] look at how pudb xo and other urwid apps do testing
+    [ ] urwid tests are in e.g. /home/pi/code/urwid/urwid/tests/test_listbox.py
 [ ] take a look at what @jlord accomplished with http://jlord.us/horizontal-web/
 [ ] more has a way of listing multiple files
 [x] hide progress bar (perhaps on timeout after paging through)
