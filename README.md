@@ -60,12 +60,12 @@ TODO
 ----
 [x] horizontal progress bar indicator
 [x] figure out how many columns are displayed, and adjust pbar accordingly
-[x] don't make the last displayed columns disappear at the end?
-[x] (n / m) total pages (columns) indicator
 [x] max columns should always be shown
 [x] progress bar should consider all visible columns as shown 
 [x] some vertical empty space at the top
 [x] space bar should move whole screen over (displayed_columns)
+[x] scroll using the mouse
+[ ] middle mouse button pastes contests of X11 paste register into a new buffer
 [ ] d and u (^D and ^U) go forward and back a column (half-screen in less)
 [x] reading from stdin
 [x] process keyboard shortcuts after reading from stdin (the way less does)
@@ -73,6 +73,7 @@ TODO
     - MUSTFIX for sane STDIN piping (e.g. git log | kanten)
     - urwid's edit.py has an example of lazy loading
 [ ] mouse interactions broken in xterm after sleeping kanten - what gives?
+    - can't click to select text in xterm
     - cannot select text even after sleeping kanten
 [ ] double spacing option for easier reading?
 [x] specifying a filename from commandline
@@ -93,6 +94,8 @@ TODO
     [ ] on exit from editing, refresh the file in kanten
 [ ] open file to the right line (at least the top-left column's line)
     - set cursor location either via search or mouseclick
+    - mouseclick should un-highlight the current match of search (if any) and
+      highlight the whole line instead
 [ ] run_wrapper to restore previous screen?
     - moar and bpython do this, i think
 [ ] dynamic resizing of width (via + and - commands, perhaps)
@@ -134,6 +137,7 @@ TODO
 [ ] support jumping to a particular line
     - would go along with editing a file at that line
     - and allow us to jump back into the same line after editing?
+    - jump to the line of the currently highlighted thing
 [ ] support ctrl-i and ctrl-o location-list jumping
 [x] reflow of text
 [ ] (maybe) reading cursor (like dictator?)
@@ -226,7 +230,6 @@ TODO
    search parsing
 [ ] support set ignorecase? set smartcase?
 [ ] add saveas (to save STDIN input)
-[ ] can't click to select text in xterm
 [ ] center single column
 [ ] version string
     [ ] :version command

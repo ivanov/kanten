@@ -104,6 +104,8 @@ k_version = ('V',)
 k_diff = ('d',)     # enable diff highlighting
 k_diff_off = ('D',) # disable diff highlighting
 k_editor = ('v',) # launch the $EDITOR
+m_scroll_up = (4,)   # scroll up
+m_scroll_down = (5,) # launch the $EDITOR
 
 c = lambda x: cmd_line_text.set_caption(x)
 #c = lambda x: cmd_line_prompt.set_text(x)
@@ -379,6 +381,11 @@ def show_or_exit(key):
             all.set_focus('body')
     elif key in k_next_search:
         # focus pane with a next result only if found
+        # pseudocode:
+        #   if current pane contains a matched element:
+        #       go to the next pane that contains an element (or highlight the
+        #       next match?)
+        #
         pass
     elif key in k_prev_search:
         # focus last result only if found
@@ -402,6 +409,13 @@ def show_or_exit(key):
     elif key in k_editor:
         editor = kanten_options['editor']
         os.spawnvp(os.P_WAIT, editor, [editor, fname])
+    elif isinstance(key, tuple) and key[0] == "mouse press":
+        if key[1] in  m_scroll_up:
+            show_or_exit(k_next[0])
+        elif key[1] in m_scroll_down: 
+            show_or_exit(k_prev[0])
+        else:
+            txt = "unhandled key " + str(key)
     elif isinstance(key, tuple):
         txt = "unhandled key " + str(key)
     cmd_line_text.set_caption(txt)
