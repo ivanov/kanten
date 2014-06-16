@@ -106,7 +106,9 @@ TODO
     [ ] drag click events for paging (flick-click right to go forward, etc)
 [ ] run_wrapper to restore previous screen?
     - moar and bpython do this, i think
-[ ] dynamic resizing of width (via + and - commands, perhaps)
+[ ] dynamic resizing of width 
+    [ ] (via + and - commands, perhaps)
+    [ ] via ":set width=40"
 [ ] respond to sigwinch and re-do the number of columns
     - number displayed changed, so the pbar needs an update
 [x] param parsing (e.g. add --help)

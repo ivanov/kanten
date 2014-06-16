@@ -58,7 +58,8 @@ kanten_default_options = dict(
     filetype='',
     number=False,
     incsearch=False,
-    editor=os.environ.get('EDITOR', 'vim')
+    editor=os.environ.get('EDITOR', 'vim'),
+    textwidth=width
     )
 
 kanten_options = kanten_default_options.copy()
@@ -67,6 +68,7 @@ options_map = {
         'ft':'filetype',
         'nu':'number',
         'is':'incsearch',
+        'tw':'textwidth',
         }
 
 # crude "filetype" detection
@@ -204,7 +206,7 @@ def set_cmd(args):
             #if val == kanten_default_options[key]:
             #    continue
             if val not in (True, False):
-                ret += key + '=' + val
+                ret += key + '=' + str(val)
             else:
                 ret += key if val else 'no' + key
             ret+="    "
@@ -223,7 +225,7 @@ def set_cmd(args):
             arg = opt_name(arg)
             val = kanten_options.get(arg, ' unknown option')
             if val not in (True, False):
-                msg =  '  ' + arg+ '=' + val
+                msg =  '  ' + arg+ '=' + str(val)
             else:
                 # set it
                 val = not val if invert else True
