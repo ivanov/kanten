@@ -515,9 +515,9 @@ def search(text, word):
     return res[:-1]
 
 def search_diff(text, word=None):
-    if text.startswith('+'):
+    if text and text[0] == '+':
         return [('diff new', text)]
-    elif text.startswith('-'):
+    elif text and text[0] == '-':
         return [('diff old', text)]
     else:
         return text

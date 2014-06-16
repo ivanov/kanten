@@ -68,6 +68,7 @@ TODO
 [x] space bar should move whole screen over (displayed_columns)
 [x] scroll using the mouse
 [ ] middle mouse button pastes contests of X11 paste register into a new buffer
+[ ] mouse events don't work after 'v' (entering editor)
 [ ] d and u (^D and ^U) go forward and back a column (half-screen in less)
 [x] reading from stdin
 [x] process keyboard shortcuts after reading from stdin (the way less does)
@@ -102,6 +103,7 @@ TODO
         for this in urwid?
     [ ] mouse click column detection is off by the size of the margins
         - find it from window_width % column_width / num_columns
+    [ ] drag click events for paging (flick-click right to go forward, etc)
 [ ] run_wrapper to restore previous screen?
     - moar and bpython do this, i think
 [ ] dynamic resizing of width (via + and - commands, perhaps)
