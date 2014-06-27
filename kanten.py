@@ -40,6 +40,8 @@ parser.add_argument( '-b','--bottom', dest='bottom', metavar='N', type=int,
                    help='the number of lines to leave blank at the bottom')
 parser.add_argument( '-d','--diff', dest='diff', action='store_true',
         help='start in diff mode (same as :set ft=diff)')
+parser.add_argument( '-q','--quick', dest='quick', action='store_true',
+        help='quit right away (same as :quit on load)')
 
 args = parser.parse_args()
 width= args.width
@@ -154,8 +156,8 @@ def display_help(args=None):
     loop.widget= exit
     return True
 
-def quit(args):
-    if '!' in args[0] or 'a' in args[0]:
+def quit(args=None):
+    if args and ('!' in args[0] or 'a' in args[0]):
         print("\nold habits die hard! ;)")
     raise urwid.ExitMainLoop()
 
@@ -666,6 +668,8 @@ if args.diff:
 elif have_pygments:
     set_cmd(("set ft=" + lexer.name.split()[0].lower()).split())
 
+if args.quick:
+    loop.set_alarm_in(0, lambda x,y:  quit())
 
 loop.run()
 

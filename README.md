@@ -106,6 +106,7 @@ TODO
     [ ] drag click events for paging (flick-click right to go forward, etc)
 [ ] run_wrapper to restore previous screen?
     - moar and bpython do this, i think
+[ ] (refactor) move all initialization into a function, to allow for re-init
 [ ] dynamic resizing of width 
     [ ] (via + and - commands, perhaps)
     [ ] via ":set width=40"
