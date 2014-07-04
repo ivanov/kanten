@@ -144,7 +144,8 @@ def display_version(args=None):
 
 def display_help(args=None):
     c(help.next())
-    exit = urwid.BigText(('exit'," kanten v" + __version__), exit_font())
+    #exit = urwid.BigText(('exit'," kanten v" + __version__), exit_font())
+    exit = urwid.BigText(('exit'," kanten v" + str(max_height)), exit_font())
     #exit = urwid.Pile([exit, ])
     #exit = urwid.Padding(exit,('relative', 100), width, left=2, right=2 )
     exit = urwid.Overlay(exit, loop.widget, 'center', 'pack', ('relative',90), 'pack',
@@ -542,7 +543,6 @@ txts = [make_text(t) for t in text.split('\n')]
 #if DEBUG:
 #    # my brain finds it easier to deal with boxes
 #    txts = [urwid.LineBox(t) for t in txts]
-pile  = Pile(txts)
 
 
 def trim(t, d, w=width):
@@ -674,7 +674,13 @@ if args.quick:
 loop.run()
 
 import IPython
-#IPython.embed()
+too_high = 0
+for p in piles:
+    if h(p) > max_height:
+        too_high += 1
+
+if too_high:
+    IPython.embed(header="There were %d violations of max_height" % too_high)
 
 if DEBUG:
     for p in piles:
