@@ -22,9 +22,10 @@ try:
 except ImportError:
     have_pygments = False
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
-parser = argparse.ArgumentParser(description='A more aesthetic pager')
+parser = argparse.ArgumentParser(
+ description='The enlightened pager: less paging. more content. read widely.')
 parser.add_argument('filenames', metavar='f', nargs='*',
                    help='an integer for the accumulator')
 parser.add_argument( '-w','--width', dest='width', metavar='N', type=int,
@@ -52,8 +53,8 @@ bottom = args.bottom
 
 top_margin = args.top 
 if not args.filenames:
-    sys.stderr.write('Missing filename ("kanten -h" for help)\n')
-    sys.exit(1)
+    # XXX: in the future this will be an explanation of how to use kanten
+    fname = '__missing_file_name__'
 else:
     fname = args.filenames[0]
 
@@ -486,6 +487,9 @@ if not sys.stdin.isatty():
             lexer = pygments.lexers.TextLexer # null / noop lexer
 
 else:
+    if fname == "__missing_file_name__":
+        sys.stderr.write('Missing filename ("kanten --help" for help)\n')
+        sys.exit(1)
     with open(fname) as f:
         text = f.read()
 

@@ -7,7 +7,7 @@ except ImportError:
     from distutils.core import setup
     have_setuptools = False
 
-VERSION = "0.5.1"
+VERSION = "0.5.12"
 M_VERSION = "0.5"
 
 setup_kwargs = {
