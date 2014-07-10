@@ -1,62 +1,22 @@
 kanten
 ======
 
-more content, less paging
--------------------------
+the enlightened pager. less paging. more content. read widely.
+--------------------------------------------------------------
+
+...because you have more than 80 columns
+
+Origin:
 
 kan-ten: Japanese for word for agar, a gelatinous substance derived from seaweed.
 
 A program for reading in the terminal. A pager for the early 90s?
 
-This program was inspired by a similar one called [Tofu]() for OS X, a
-column-based reader application, where the columns are arranged horizontally.
-Given the aspect ratio of computer monitors, I decided to create kanten to be a
-unix pager replacement (more and less) that is not limited to 80 columns.
-
-
-
-Here's what the output of running kanten's motto through `kanten -w 1 -l 7` would look
-like:
-
-k    l    p    m    c
-a    e    a    o    o
-n    s    g    r    n
-t    s    i    e    t
-e         n         e
-n         g         n
-                    T
-
-kanten:          
-less paging 
-more content
-
-echo "kanten:
-
-less paging
-more content
-
-" | kanten -w 7
-
-k n e
-a t n
-
-ka nt en
-
-80 cols
-
-other bylines
---------------
-...because you have more than 80 columns
-
-terminal [Tofu]()
-
-when [Tofu]()'s too much. (borrowing from [xo]'s "when `nano`'s too much")
-
-possible other names
---------------------
-onte - [c]onte[xt] [c]onte[nt]
-kinc - "A little more than kin, and less than kind"
-bond - "according to my bond, no more, nor less" -- Merchant of Venice
+This program was inspired by a similar one called
+[Tofu](http://amarsagoo.info/tofu/) for OS X, a column-based reader application,
+where the columns are arranged horizontally.  Given the aspect ratio of computer
+monitors, I decided to create kanten to be a unix pager replacement (more and
+less) that is not limited to 80 columns.
 
 TODO
 ----

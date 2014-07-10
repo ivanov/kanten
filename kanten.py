@@ -3,7 +3,8 @@ from __future__ import print_function
 
 DEBUG = False
 # debugging only
-import IPython
+if DEBUG:
+    import IPython
 
 import os
 import sys
@@ -432,7 +433,8 @@ def show_or_exit(key):
         else:
             txt = "unhandled key " + str(key)
     elif key in k_debug:
-        IPython.embed_kernel()
+        if DEBUG:
+            IPython.embed_kernel()
     elif isinstance(key, tuple):
         txt = "unhandled key " + str(key)
     else:
@@ -679,8 +681,8 @@ for p in piles:
     if h(p) > max_height:
         too_high += 1
 
-if too_high:
-    IPython.embed(header="There were %d violations of max_height" % too_high)
+#if too_high:
+#    IPython.embed(header="There were %d violations of max_height" % too_high)
 
 if DEBUG:
     for p in piles:
