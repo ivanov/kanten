@@ -147,7 +147,7 @@ def display_version(args=None):
 def display_help(args=None):
     c(help.next())
     #exit = urwid.BigText(('exit'," kanten v" + __version__), exit_font())
-    exit = urwid.BigText(('exit'," kanten v" + str(max_height)), exit_font())
+    exit = urwid.BigText(('exit'," kanten v" + str(__version__)), exit_font())
     #exit = urwid.Pile([exit, ])
     #exit = urwid.Padding(exit,('relative', 100), width, left=2, right=2 )
     exit = urwid.Overlay(exit, loop.widget, 'center', 'pack', ('relative',90), 'pack',
