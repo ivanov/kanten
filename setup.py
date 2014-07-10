@@ -7,7 +7,8 @@ except ImportError:
     from distutils.core import setup
     have_setuptools = False
 
-VERSION = "0.5.0"
+VERSION = "0.5.1"
+M_VERSION = "0.5"
 
 setup_kwargs = {
     "version": VERSION,
@@ -15,7 +16,7 @@ setup_kwargs = {
     "author": 'Paul Ivanov',
     "author_email": 'pi@berkeley.edu',
     "url": 'http://kant-en.org/',
-    "download_url": "https://github.com/ivanov/kanten/zipball/" + VERSION,
+    "download_url": "https://github.com/ivanov/kanten/zipball/" + M_VERSION,
     "classifiers": [
         "License :: OSI Approved",
         "License :: OSI Approved :: BSD License",

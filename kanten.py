@@ -52,8 +52,8 @@ bottom = args.bottom
 
 top_margin = args.top 
 if not args.filenames:
-    # XXX: in the future this will be an explanation of how to use kanten
-    fname = '/home/pi/cur/das.txt'
+    sys.stderr.write('Missing filename ("kanten -h" for help)\n')
+    sys.exit(1)
 else:
     fname = args.filenames[0]
 
