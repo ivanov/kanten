@@ -24,60 +24,61 @@ except ImportError:
 
 __version__ = '0.5.1'
 
-parser = argparse.ArgumentParser(
- description='The enlightened pager: less paging. more content. read widely.')
-parser.add_argument('filenames', metavar='f', nargs='*',
-                   help='an integer for the accumulator')
-parser.add_argument( '-w','--width', dest='width', metavar='N', type=int,
-                   default=80,
-                   help='the number of character in a column line')
-parser.add_argument( '-l','--height', '--lines', dest='height', metavar='N', type=int,
-                   default='0',
-                   help='the number of lines per column (0 for auto)')
-parser.add_argument( '-t','--top', dest='top', metavar='N', type=int,
-                   default='4',
-                   help='the number of lines to leave blank at the top')
-parser.add_argument( '-b','--bottom', dest='bottom', metavar='N', type=int,
-                   default='4',
-                   help='the number of lines to leave blank at the bottom')
-parser.add_argument( '-d','--diff', dest='diff', action='store_true',
-        help='start in diff mode (same as :set ft=diff)')
-parser.add_argument( '-q','--quick', dest='quick', action='store_true',
-        help='quit right away (same as :quit on load)')
+def main():
+    parser = argparse.ArgumentParser(
+     description='The enlightened pager: less paging. more content. read widely.')
+    parser.add_argument('filenames', metavar='f', nargs='*',
+                       help='an integer for the accumulator')
+    parser.add_argument( '-w','--width', dest='width', metavar='N', type=int,
+                       default=80,
+                       help='the number of character in a column line')
+    parser.add_argument( '-l','--height', '--lines', dest='height', metavar='N', type=int,
+                       default='0',
+                       help='the number of lines per column (0 for auto)')
+    parser.add_argument( '-t','--top', dest='top', metavar='N', type=int,
+                       default='4',
+                       help='the number of lines to leave blank at the top')
+    parser.add_argument( '-b','--bottom', dest='bottom', metavar='N', type=int,
+                       default='4',
+                       help='the number of lines to leave blank at the bottom')
+    parser.add_argument( '-d','--diff', dest='diff', action='store_true',
+            help='start in diff mode (same as :set ft=diff)')
+    parser.add_argument( '-q','--quick', dest='quick', action='store_true',
+            help='quit right away (same as :quit on load)')
 
-args = parser.parse_args()
-width= args.width
-height = args.height
-top = args.top
-bottom = args.bottom
+    args = parser.parse_args()
+    width= args.width
+    height = args.height
+    top = args.top
+    bottom = args.bottom
 
-top_margin = args.top 
-if not args.filenames:
-    # XXX: in the future this will be an explanation of how to use kanten
-    fname = '__missing_file_name__'
-else:
-    fname = args.filenames[0]
+    top_margin = args.top 
+    if not args.filenames:
+        # XXX: in the future this will be an explanation of how to use kanten
+        fname = '__missing_file_name__'
+    else:
+        fname = args.filenames[0]
 
-kanten_default_options = dict(
-    filetype='',
-    number=False,
-    incsearch=False,
-    editor=os.environ.get('EDITOR', 'vim'),
-    textwidth=width
-    )
+    kanten_default_options = dict(
+        filetype='',
+        number=False,
+        incsearch=False,
+        editor=os.environ.get('EDITOR', 'vim'),
+        textwidth=width
+        )
 
-kanten_options = kanten_default_options.copy()
+    kanten_options = kanten_default_options.copy()
 
-options_map = {
-        'ft':'filetype',
-        'nu':'number',
-        'is':'incsearch',
-        'tw':'textwidth',
-        }
+    options_map = {
+            'ft':'filetype',
+            'nu':'number',
+            'is':'incsearch',
+            'tw':'textwidth',
+            }
 
-# crude "filetype" detection
-if os.path.splitext(fname)[-1] in ('.diff', '.patch') or args.diff:
-    kanten_options['filetype'] = 'diff'
+    # crude "filetype" detection
+    if os.path.splitext(fname)[-1] in ('.diff', '.patch') or args.diff:
+        kanten_options['filetype'] = 'diff'
 
 def opt_name(name):
     "Translate short names to their full equivalents"
@@ -701,5 +702,5 @@ g = lambda t:len(f(t))
 #print [f(t) for t in txts[:] if g(t)>0]
 
 
-#IPython.embed()
-#pu.db
+if __name__ == '__main__':
+    main()
