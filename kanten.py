@@ -24,7 +24,24 @@ except ImportError:
 
 __version__ = '0.5.1'
 
+class Kanten(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(**kwargs)
+
+    @property
+    def max_width(self):
+        return self.screen.get_cols_rows()[0]
+
+options_map = {
+    'ft':'filetype',
+    'nu':'number',
+    'is':'incsearch',
+    'tw':'textwidth',
+}
+
 def main():
+    global fname
+    global K
     parser = argparse.ArgumentParser(
      description='The enlightened pager: less paging. more content. read widely.')
     parser.add_argument('filenames', metavar='f', nargs='*',
@@ -47,12 +64,22 @@ def main():
             help='quit right away (same as :quit on load)')
 
     args = parser.parse_args()
-    width= args.width
-    height = args.height
-    top = args.top
-    bottom = args.bottom
+    K = Kanten(
+        width= args.width,
+        height = args.height,
+        top = args.top,
+        bottom = args.bottom,
+        top_margin = args.top,
+        screen = urwid.raw_display.Screen(),
+        args=args,
+    )
 
-    top_margin = args.top 
+
+    max_width, max_height = K.screen.get_cols_rows()
+
+    max_height = max_height- K.top - K.bottom
+    K.height = min(max_height, K.height) if K.height > 0 else max_height
+
     if not args.filenames:
         # XXX: in the future this will be an explanation of how to use kanten
         fname = '__missing_file_name__'
@@ -64,21 +91,18 @@ def main():
         number=False,
         incsearch=False,
         editor=os.environ.get('EDITOR', 'vim'),
-        textwidth=width
+        textwidth=K.width
         )
 
-    kanten_options = kanten_default_options.copy()
+    K.kanten_options = kanten_default_options.copy()
 
-    options_map = {
-            'ft':'filetype',
-            'nu':'number',
-            'is':'incsearch',
-            'tw':'textwidth',
-            }
 
     # crude "filetype" detection
     if os.path.splitext(fname)[-1] in ('.diff', '.patch') or args.diff:
-        kanten_options['filetype'] = 'diff'
+        K.kanten_options['filetype'] = 'diff'
+
+    text = read(fname)
+    render_text(text, K)
 
 def opt_name(name):
     "Translate short names to their full equivalents"
@@ -141,8 +165,8 @@ exit_font = urwid.font.HalfBlock7x7Font
 
 def display_version(args=None):
     ver = urwid.BigText(('ver'," kanten v" + __version__), exit_font())
-    ver = urwid.Overlay(ver, loop.widget, 'center', 'pack', 'middle', 'pack',)
-    loop.widget= exit
+    ver = urwid.Overlay(ver, K.loop.widget, 'center', 'pack', 'middle', 'pack',)
+    K.loop.widget= exit
     return True
 
 def display_help(args=None):
@@ -151,13 +175,13 @@ def display_help(args=None):
     exit = urwid.BigText(('exit'," kanten v" + str(__version__)), exit_font())
     #exit = urwid.Pile([exit, ])
     #exit = urwid.Padding(exit,('relative', 100), width, left=2, right=2 )
-    exit = urwid.Overlay(exit, loop.widget, 'center', 'pack', ('relative',90), 'pack',
+    exit = urwid.Overlay(exit, K.loop.widget, 'center', 'pack', ('relative',90), 'pack',
             min_height=15)
                 #min_width=20, min_height=5)
     # TODO: maybe do some overlay later - inserting into col content is pretty
     # good for now
     #cols.contents.insert(0, exit)
-    loop.widget= exit
+    K.loop.widget= exit
     return True
 
 def quit(args=None):
@@ -178,7 +202,7 @@ def info(args):
 def cmd_not_found(args):
     e('not a kanten command: ' + ' '.join(args))
 
-def set_cmd(args):
+def set_cmd(args, K):
     """
     Set various aspects about how kanten behaves. A lot of the syntax and
     semantics are borrowed from Vim's `:help set`
@@ -207,7 +231,7 @@ def set_cmd(args):
     """
     if len(args) == 1:
         ret =''
-        for key,val in kanten_options.items():
+        for key,val in K.kanten_options.items():
             # skip entries which are default values
             #if val == kanten_default_options[key]:
             #    continue
@@ -236,7 +260,7 @@ def set_cmd(args):
                 # set it
                 val = not val if invert else True
                 val = False if negate else val
-                kanten_options[arg] = val
+                K.kanten_options[arg] = val
                 msg = arg if val else 'no' + arg
                 msg = ':set ' + msg
             c(msg)
@@ -247,17 +271,17 @@ def set_cmd(args):
             chomp = max(idx, idx2)
         lhs,rhs = arg[:chomp],arg[chomp+1:]
         arg = opt_name(lhs)
-        if kanten_options[arg] in (True, False):
+        if K.kanten_options[arg] in (True, False):
             c("Cannot assign, use 'set %s', 'set no%s'" % (arg, arg))
         else:
-            kanten_options[arg] = rhs
+            K.kanten_options[arg] = rhs
             #XXX: turning into spaghetti code here, but what can you do?
             #   - make a callback (reactive) options dictionary?
             if arg == 'filetype' and rhs == 'diff':
                 rehighlight(txts, '', search=search_diff)
             elif arg == 'filetype':
                 #XXX: add pygments-based highlighting here for other files
-                rehighlight(txts, '', search=search_noop)
+                rehighlight(K.txts, '', search=search_noop)
     return True # by returning True, the cmd_line_text won't get reset to ''
 
 def search_replace(args):
@@ -295,6 +319,7 @@ do_cmd = colon
 def page_back():
     pass
 
+K = None
 
 def show_or_exit(key):
     global off_screen
@@ -305,10 +330,13 @@ def show_or_exit(key):
     txt = ''
 
     # set the progress bar visibility, so info can set it just once
+    pbh = K.pbh
     pbh.send(show)
+    displayed_columns = K.displayed_columns
+    cols = K.cols
 
-    if isinstance(loop.widget, urwid.Overlay):
-        loop.widget = loop.widget[0] # pop off the overlay
+    if isinstance(K.loop.widget, urwid.Overlay):
+        K.loop.widget = K.loop.widget[0] # pop off the overlay
     if key != '.':
         last_key = key
     else:
@@ -378,8 +406,8 @@ def show_or_exit(key):
         return
     elif key in k_submit:
         if all.get_focus() == 'footer':
-            input = cmd_line_text.get_edit_text()
-            cmd_line_text.set_edit_text('');
+            input = K.cmd_line_text.get_edit_text()
+            K.cmd_line_text.set_edit_text('');
             all.set_focus('body')
             if do_cmd(input):
                 # colon_dispatch methods return true if the rest of the method
@@ -441,13 +469,13 @@ def show_or_exit(key):
         txt = "unhandled key " + str(key)
     else:
         txt = "unhandled key " + str(key)
-    cmd_line_text.set_caption(txt)
+    K.cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
-    pbar.set_completion(len(off_screen)+displayed_columns)
-    cmd_line_text.set_edit_text('') 
+    K.pbar.set_completion(len(off_screen)+displayed_columns)
+    K.cmd_line_text.set_edit_text('') 
 
 show = True
-def progress_bar_handler():
+def progress_bar_handler(p):
     """Progress bar coroutine. Send it whether or not you want to show the
     progress bar. 
 
@@ -464,12 +492,32 @@ def progress_bar_handler():
                 p.body.pop()
         show = (yield)
 
-pbh = progress_bar_handler()
-pbh.next()
+lexer = None
+def read(fname):
+    # XXX: implement buffering here, don't read the whole file / piped message
+    global lexer
+    if not sys.stdin.isatty():
+        text = read_from_pipe()
 
-# XXX: implement buffering here, don't read the whole file / piped message
-if not sys.stdin.isatty():
+    if fname == "__missing_file_name__":
+        sys.stderr.write('Missing filename ("kanten --help" for help)\n')
+        sys.exit(1)
+    with open(fname) as f:
+        text = f.read()
+
+    if have_pygments:
+        try:
+            lexer = pygments.lexers.get_lexer_for_filename(fname)
+        except pygments.util.ClassNotFound:
+            # TODO: if ipynb, treat it as json
+            # lexer = pygments.lexers.web.JsonLexer #XXX placeholder
+            lexer = pygments.lexers.TextLexer # null / noop lexer
+
+    return text
+
+def read_from_pipe():
     # read from a pipe
+    global lexer
     text = sys.stdin.read()
     import os
     sys.stdin.close()
@@ -487,28 +535,10 @@ if not sys.stdin.isatty():
         if lexer.name == "Prolog":
             lexer = pygments.lexers.TextLexer # null / noop lexer
 
-else:
-    if fname == "__missing_file_name__":
-        sys.stderr.write('Missing filename ("kanten --help" for help)\n')
-        sys.exit(1)
-    with open(fname) as f:
-        text = f.read()
+    return text
 
-    if have_pygments:
-        try:
-            lexer = pygments.lexers.get_lexer_for_filename(fname)
-        except pygments.util.ClassNotFound:
-            # TODO: if ipynb, treat it as json
-            # lexer = pygments.lexers.web.JsonLexer #XXX placeholder
-            lexer = pygments.lexers.TextLexer # null / noop lexer
 
-screen =  screen = urwid.raw_display.Screen()
-max_width, max_height = screen.get_cols_rows()
-
-max_height = max_height- top - bottom
-height = min(max_height, height) if height > 0 else max_height
-
-def make_text(t):
+def make_text(t, width):
     result = Padding(Text(t, align='left'), ('relative', 100), width, left=2,
             right=2)
     if DEBUG:
@@ -541,18 +571,9 @@ def rehighlight(txts, s, search=search):
     [t.original_widget.set_text(search(t.original_widget.text, s)) for t in txts]
 
 
-#text = [
-txts = [make_text(t) for t in text.split('\n')]
-#s = search(text, 'all')
-#txts = [make_text(list(t)) for t in zip(s[::3], s[1::3], s[2::3])]
-#[t.original_widget.set_text(search(t.original_widget.text, 'all')) for t in txts]
-#rehighlight(txts,'all')
-#if DEBUG:
-#    # my brain finds it easier to deal with boxes
-#    txts = [urwid.LineBox(t) for t in txts]
 
 
-def trim(t, d, w=width):
+def trim(t, d, w):
     """Trim the text in `t` to only `d` lines, assuming a width of `w`"""
     if DEBUG:
         pre_rendered_text = t.original_widget.original_widget.text
@@ -565,7 +586,7 @@ def trim(t, d, w=width):
         else:
             next_start = pre_rendered_text.find(lines[d].strip())
         t.original_widget.original_widget.set_text(pre_rendered_text[:next_start])
-        return make_text(pre_rendered_text[next_start:])
+        return make_text(pre_rendered_text[next_start:], w)
 
     pre_rendered_text = t.original_widget.text
     lines = t.render((w,)).text
@@ -574,126 +595,138 @@ def trim(t, d, w=width):
     # be added to the next pile, which we will also initialize here
     next_start = pre_rendered_text.find(lines[d].strip())
     t.original_widget.set_text(pre_rendered_text[:next_start])
-    return make_text(pre_rendered_text[next_start:])
+    return make_text(pre_rendered_text[next_start:], w)
 
-def h(e):
-    return e.rows((width,))
+def h(e, K):
+    return e.rows((K.width,))
 
-piles = []
-p = Pile([])
-for t in txts[:]:
-    #if 'What emerges' in t.text: pu.db
-    p.contents.append((t, p.options()))
-    t_size = t.rows((width,))
-    #if piles and h(piles[-1]) > height: pu.db
-    while h(p) > height:
-        # Add a new pile, and send the trimmings in there
-        piles.append(p)
-        d = h(t) - (h(p) - height)
-        
-        #if d <= 0: pu.db
-        
-        # start the next column
-        p_new = Pile([])
-        t_extra = trim(t, d, width)
-        # TODO: include diff status in here, and line numbers
-        p_new.contents.append((t_extra, p.options()))
-        p = p_new
-        t = t_extra
-
-
-    #if piles and h(piles[-1]) > height:
-    #    # ACK!
-    #    break
-    if h(p) == height:
-        piles.append(p)
-        # start the next column
-        p = Pile([])
-
-# all done, don't forget the last pile which we haven't added to the list yet
-piles.append(p)
-
-palette = [
-    (None,  'light gray', 'black'),
-    ('heading', 'black', 'light gray'),
-    ('important', 'black', 'light cyan'),
-    ('line', 'black', 'light gray'),
-    ('options', 'dark gray', 'black'),
-    ('focus heading', 'white', 'dark red'),
-    ('focus line', 'black', 'dark red'),
-    ('diff old', 'dark red', 'black'),
-    ('diff new', 'dark green', 'black'),
-    ('focus options', 'black', 'light gray'),
-    ('pg normal',    'white',      'black', 'standout'),
-    ('pg complete',  'white',      'dark magenta'),
-    ('selected', 'white', 'dark blue')]
-
-#piles = urwid.ListBox(urwid.SimpleFocusListWalker(piles))
-#cols = piles
-#fill = cols
-cols = urwid.Columns(piles, dividechars=1, min_width=width)
-
-# XXX: I need to subclass columns, and make it so the keypress function
-# "rolls" the piles under the hood, and re-renders all the widgets.
-#
-# self.contents.append(self.contents.pop(0))
-#
-#cols.box_columns.extend(cols.widget_list)
+def render_text(text, K):
+    txts = [make_text(t, K.width) for t in text.split('\n')]
+    K.txts = txts
+    piles = []
+    p = Pile([])
+    for t in txts[:]:
+        #if 'What emerges' in t.text: pu.db
+        p.contents.append((t, p.options()))
+        t_size = t.rows((K.width,))
+        #if piles and h(piles[-1]) > height: pu.db
+        while h(p, K) > K.height:
+            # Add a new pile, and send the trimmings in there
+            piles.append(p)
+            d = h(t, K) - (h(p, K) - K.height)
+            
+            #if d <= 0: pu.db
+            
+            # start the next column
+            p_new = Pile([])
+            t_extra = trim(t, d, K.width)
+            # TODO: include diff status in here, and line numbers
+            p_new.contents.append((t_extra, p.options()))
+            p = p_new
+            t = t_extra
 
 
-#grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
-fill = urwid.Filler(cols, 'top', top=top_margin)
-total_cols = len(cols.contents)
-col_widths = cols.column_widths(screen.get_cols_rows())
-displayed_columns = len( col_widths )
+        #if piles and h(piles[-1]) > height:
+        #    # ACK!
+        #    break
+        if h(p, K) == K.height:
+            piles.append(p)
+            # start the next column
+            p = Pile([])
 
-# XXX: this is not the full story, it ignores the borders between columns
-c_columns = map(lambda i: sum(col_widths[:i+1]), range(displayed_columns))
-border = (max_width - c_columns[-1]) /  displayed_columns
-def xpos_to_col(pos):
-    for i,c in enumerate(c_columns):
-        if pos < (c + i * border):
-            return i
-
-pbar = ProgressBar('pg normal', 'pg complete', displayed_columns, total_cols)
+    # all done, don't forget the last pile which we haven't added to the list yet
+    piles.append(p)
 
 
-p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
+    palette = [
+        (None,  'light gray', 'black'),
+        ('heading', 'black', 'light gray'),
+        ('important', 'black', 'light cyan'),
+        ('line', 'black', 'light gray'),
+        ('options', 'dark gray', 'black'),
+        ('focus heading', 'white', 'dark red'),
+        ('focus line', 'black', 'dark red'),
+        ('diff old', 'dark red', 'black'),
+        ('diff new', 'dark green', 'black'),
+        ('focus options', 'black', 'light gray'),
+        ('pg normal',    'white',      'black', 'standout'),
+        ('pg complete',  'white',      'dark magenta'),
+        ('selected', 'white', 'dark blue')]
 
-all = Pile([ fill, (1, p), ]) 
-cmd_line_text = urwid.Edit(fname)
-#cmd_line_prompt = urwid.Text('hi there')
-#cmd_line_combined = urwid.Filler([cmd_line_prompt, cmd_line_text])
-#all = urwid.Frame(body=all, footer=cmd_line_combined)
-all = urwid.Frame(body=all, footer=cmd_line_text)
-loop = urwid.MainLoop(all, palette, screen, unhandled_input=show_or_exit)
-loop.exit = urwid.Text(" Help? ")
+    #piles = urwid.ListBox(urwid.SimpleFocusListWalker(piles))
+    #cols = piles
+    #fill = cols
+    cols = urwid.Columns(piles, dividechars=1, min_width=K.width)
+    K.cols = cols
 
-#IPython.embed()
-if args.diff:
-    set_cmd("set ft=diff".split())
-elif have_pygments:
-    set_cmd(("set ft=" + lexer.name.split()[0].lower()).split())
+    # XXX: I need to subclass columns, and make it so the keypress function
+    # "rolls" the piles under the hood, and re-renders all the widgets.
+    #
+    # self.contents.append(self.contents.pop(0))
+    #
+    #cols.box_columns.extend(cols.widget_list)
 
-if args.quick:
-    loop.set_alarm_in(0, lambda x,y:  quit())
 
-loop.run()
+    #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
+    fill = urwid.Filler(cols, 'top', top=K.top_margin)
+    total_cols = len(cols.contents)
+    col_widths = cols.column_widths(K.screen.get_cols_rows())
+    K.displayed_columns = len( col_widths )
 
-import IPython
-too_high = 0
-for p in piles:
-    if h(p) > max_height:
-        too_high += 1
+    # XXX: this is not the full story, it ignores the borders between columns
+    c_columns = map(lambda i: sum(col_widths[:i+1]), range(K.displayed_columns))
+    border = (K.max_width - c_columns[-1]) /  K.displayed_columns
+    def xpos_to_col(pos):
+        for i,c in enumerate(c_columns):
+            if pos < (c + i * border):
+                return i
+
+    pbar = ProgressBar('pg normal', 'pg complete', K.displayed_columns, total_cols)
+    K.pbar = pbar
+
+
+    p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
+
+    all = Pile([ fill, (1, p), ])
+    cmd_line_text = urwid.Edit(fname)
+    K.cmd_line_text = cmd_line_text
+    #cmd_line_prompt = urwid.Text('hi there')
+    #cmd_line_combined = urwid.Filler([cmd_line_prompt, cmd_line_text])
+    #all = urwid.Frame(body=all, footer=cmd_line_combined)
+    all = urwid.Frame(body=all, footer=cmd_line_text)
+    K.loop = urwid.MainLoop(all, palette, K.screen, unhandled_input=show_or_exit)
+    K.loop.exit = urwid.Text(" Help? ")
+
+    #IPython.embed()
+    if K.args.diff:
+        set_cmd("set ft=diff".split(), K)
+    elif have_pygments:
+        set_cmd(("set ft=" + lexer.name.split()[0].lower()).split(), K)
+
+    if K.args.quick:
+        K.loop.set_alarm_in(0, lambda x,y:  quit())
+
+    pbh = progress_bar_handler(p)
+    K.pbh = pbh
+    pbh.next()
+
+
+    K.loop.run()
+
+#import IPython
+#too_high = 0
+#for p in piles:
+#    if h(p) > max_height:
+#        too_high += 1
 
 #if too_high:
 #    IPython.embed(header="There were %d violations of max_height" % too_high)
 
 if DEBUG:
     for p in piles:
-        print(h(p))
+        print(h(p, K))
         for c in p.contents:
-            print("\t" , h(c[0]))
+            print("\t" , h(c[0], K))
 
 #print [type(t.original_widget.text) for t in txts]
 #print [(t.original_widget.get_text()[1]) for t in txts[0:100]]
