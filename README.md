@@ -211,4 +211,12 @@ TODO
 [ ] swallow last empty panel in the banner
 [x] make kanten importable (refactor out the cli aspects to make testing easier)
 [ ] bug - height is exceeded in my piles (off by one?)
-[ ] fix command line (ex mode)
+[x] fix command line (ex mode)
+
+
+TEST PLAN
+---------
+
+[ ] / to search  (with highlighting)
+[ ] g / G to go to the beginning / end of the file
+[ ] ? to get help

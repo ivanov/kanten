@@ -86,6 +86,7 @@ def main():
     else:
         fname = args.filenames[0]
 
+    K.fname = fname
     kanten_default_options = dict(
         filetype='',
         number=False,
@@ -103,6 +104,7 @@ def main():
 
     text = read(fname)
     render_text(text, K)
+    rehighlight(K.txts, 'kan')
 
 def opt_name(name):
     "Translate short names to their full equivalents"
@@ -278,7 +280,7 @@ def set_cmd(args, K):
             #XXX: turning into spaghetti code here, but what can you do?
             #   - make a callback (reactive) options dictionary?
             if arg == 'filetype' and rhs == 'diff':
-                rehighlight(txts, '', search=search_diff)
+                rehighlight(K.txts, '', search=search_diff)
             elif arg == 'filetype':
                 #XXX: add pygments-based highlighting here for other files
                 rehighlight(K.txts, '', search=search_noop)
@@ -389,13 +391,13 @@ def show_or_exit(key):
         #cmd_line_text.focus()
         K.all.set_focus('footer')
         txt = '/'
-        do_cmd = lambda x: rehighlight(txts, x)
+        do_cmd = lambda x: rehighlight(K.txts, x)
         K.cmd_line_text.set_edit_text('')
     elif key in k_search_bw:
         #cmd_line_text.focus()
         K.all.set_focus('footer')
         txt = '?'
-        do_cmd = lambda x: rehighlight(txts, x)
+        do_cmd = lambda x: rehighlight(K.txts, x)
         K.cmd_line_text.set_edit_text('')
     elif key in k_command:
         #txt = ':'
@@ -430,15 +432,15 @@ def show_or_exit(key):
         # focus last result only if found
         pass
     elif key in k_diff:
-        rehighlight(txts, '', search=search_diff)
+        rehighlight(K.txts, '', search=search_diff)
     elif key in k_diff_off:
-        rehighlight(txts, '', search=search_noop)
+        rehighlight(K.txts, '', search=search_noop)
     elif key in k_info:
-        txt = fname
+        txt = K.fname
         if kanten_options['filetype']:
             txt += " (ft=" + kanten_options['filetype'] + ")"
-        txt += " (%d / %d)" % (total_cols-len(cols.contents) +
-                displayed_columns , total_cols)
+        txt += " (%d / %d)" % (K.total_cols-len(cols.contents) +
+                displayed_columns , K.total_cols)
         if len(cols.contents) == displayed_columns:
             txt += ' (END)'
         pbh.send(True)
@@ -447,7 +449,7 @@ def show_or_exit(key):
         pbh.send(show)
     elif key in k_editor:
         editor = kanten_options['editor']
-        os.spawnvp(os.P_WAIT, editor, [editor, fname])
+        os.spawnvp(os.P_WAIT, editor, [editor, K.fname])
     elif isinstance(key, tuple) and key[0] == "mouse press":
         if key[1] in  m_scroll_up:
             show_or_exit(k_next[0])
@@ -486,7 +488,7 @@ def progress_bar_handler(p):
     show = (yield)
     while True:
         if not len(p.body):
-            p.body.append(pbar)
+            p.body.append(K.pbar)
         if not show:
             if len(p.body):
                 p.body.pop()
@@ -688,13 +690,13 @@ def render_text(text, K):
     p = urwid.ListBox(urwid.SimpleListWalker([pbar]))
 
     all = Pile([ fill, (1, p), ])
-    cmd_line_text = urwid.Edit(fname)
+    cmd_line_text = urwid.Edit(K.fname)
     K.cmd_line_text = cmd_line_text
     #cmd_line_prompt = urwid.Text('hi there')
     #cmd_line_combined = urwid.Filler([cmd_line_prompt, cmd_line_text])
     #all = urwid.Frame(body=all, footer=cmd_line_combined)
     K.all = urwid.Frame(body=all, footer=cmd_line_text)
-    K.loop = urwid.MainLoop(all, palette, K.screen, unhandled_input=show_or_exit)
+    K.loop = urwid.MainLoop(K.all, palette, K.screen, unhandled_input=show_or_exit)
     K.loop.exit = urwid.Text(" Help? ")
 
     #IPython.embed()
