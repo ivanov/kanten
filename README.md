@@ -209,5 +209,6 @@ TODO
 [ ] for ipython: register .ipynb as a json lexer-able thing
     pygments.lexers.web.JsonLexer
 [ ] swallow last empty panel in the banner
-[ ] make kanten importable (refactor out the cli aspects to make testing easier)
+[x] make kanten importable (refactor out the cli aspects to make testing easier)
 [ ] bug - height is exceeded in my piles (off by one?)
+[ ] fix command line (ex mode)

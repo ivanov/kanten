@@ -141,9 +141,9 @@ m_scroll_down = (5,) # launch the $EDITOR
 m_paste = (2,) # launch the $EDITOR
 m_click = (1,) # launch the $EDITOR
 
-c = lambda x: cmd_line_text.set_caption(x)
+c = lambda x: K.cmd_line_text.set_caption(x)
 #c = lambda x: cmd_line_prompt.set_text(x)
-e = lambda x: cmd_line_text.set_edit_text(x)
+e = lambda x: K.cmd_line_text.set_edit_text(x)
 
 def help_egg():
     from struct import pack
@@ -387,37 +387,37 @@ def show_or_exit(key):
             txt = '(END)'
     elif key in k_search:
         #cmd_line_text.focus()
-        all.set_focus('footer')
+        K.all.set_focus('footer')
         txt = '/'
         do_cmd = lambda x: rehighlight(txts, x)
-        cmd_line_text.set_edit_text('')
+        K.cmd_line_text.set_edit_text('')
     elif key in k_search_bw:
         #cmd_line_text.focus()
-        all.set_focus('footer')
+        K.all.set_focus('footer')
         txt = '?'
         do_cmd = lambda x: rehighlight(txts, x)
-        cmd_line_text.set_edit_text('')
+        K.cmd_line_text.set_edit_text('')
     elif key in k_command:
         #txt = ':'
         c(':')
-        all.set_focus('footer')
+        K.all.set_focus('footer')
         #cmd_line_text.set_edit_text('')
         do_cmd = colon
         return
     elif key in k_submit:
-        if all.get_focus() == 'footer':
+        if K.all.get_focus() == 'footer':
             input = K.cmd_line_text.get_edit_text()
             K.cmd_line_text.set_edit_text('');
-            all.set_focus('body')
+            K.all.set_focus('body')
             if do_cmd(input):
                 # colon_dispatch methods return true if the rest of the method
                 # should be skipped (because colon_dispatch method also calls
                 # it, for example) 
                 return
     elif key in k_escape:
-        if all.get_focus() == 'footer':
+        if K.all.get_focus() == 'footer':
             txt = ''
-            all.set_focus('body')
+            K.all.set_focus('body')
     elif key in k_next_search:
         # focus pane with a next result only if found
         # pseudocode:
@@ -693,7 +693,7 @@ def render_text(text, K):
     #cmd_line_prompt = urwid.Text('hi there')
     #cmd_line_combined = urwid.Filler([cmd_line_prompt, cmd_line_text])
     #all = urwid.Frame(body=all, footer=cmd_line_combined)
-    all = urwid.Frame(body=all, footer=cmd_line_text)
+    K.all = urwid.Frame(body=all, footer=cmd_line_text)
     K.loop = urwid.MainLoop(all, palette, K.screen, unhandled_input=show_or_exit)
     K.loop.exit = urwid.Text(" Help? ")
 
