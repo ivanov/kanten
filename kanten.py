@@ -104,7 +104,6 @@ def main():
 
     text = read(fname)
     render_text(text, K)
-    rehighlight(K.txts, 'kan')
 
 def opt_name(name):
     "Translate short names to their full equivalents"
@@ -289,6 +288,13 @@ def set_cmd(args, K):
 def search_replace(args):
     pass
 
+def get_search_or_search_next(key):
+    def search_or_change_result(x):
+        if len(x) == 0:
+            return show_or_exit(key[0])
+        rehighlight(K.txts, x)
+    return search_or_change_result
+
 # All dispatch commands should return True only if the rest of the
 # show_or_exit method should be skipped after they are performed.
 colon_dispatch_defaults = {
@@ -391,13 +397,14 @@ def show_or_exit(key):
         #cmd_line_text.focus()
         K.all.set_focus('footer')
         txt = '/'
-        do_cmd = lambda x: rehighlight(K.txts, x)
+        #do_cmd = lambda x: rehighlight(K.txts, x)
+        do_cmd = get_search_or_search_next(k_next_search)
         K.cmd_line_text.set_edit_text('')
     elif key in k_search_bw:
         #cmd_line_text.focus()
         K.all.set_focus('footer')
         txt = '?'
-        do_cmd = lambda x: rehighlight(K.txts, x)
+        do_cmd = get_search_or_search_next(k_prev_search)
         K.cmd_line_text.set_edit_text('')
     elif key in k_command:
         #txt = ':'
@@ -427,9 +434,13 @@ def show_or_exit(key):
         #       go to the next pane that contains an element (or highlight the
         #       next match?)
         #
+        c("next search functionality not implemented yet")
+        return True
         pass
     elif key in k_prev_search:
         # focus last result only if found
+        c("prev search functionality not implemented yet")
+        return True
         pass
     elif key in k_diff:
         rehighlight(K.txts, '', search=search_diff)
@@ -471,6 +482,8 @@ def show_or_exit(key):
         txt = "unhandled key " + str(key)
     else:
         txt = "unhandled key " + str(key)
+    if DEBUG:
+        txt = "key = " + str(key)
     K.cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
     K.pbar.set_completion(len(off_screen)+displayed_columns)
@@ -543,7 +556,7 @@ def read_from_pipe():
 def make_text(t, width):
     result = Padding(Text(t, align='left'), ('relative', 100), width, left=2,
             right=2)
-    if DEBUG:
+    if DEBUG and 0:
         return urwid.LineBox(result)
     return result
 
@@ -577,7 +590,7 @@ def rehighlight(txts, s, search=search):
 
 def trim(t, d, w):
     """Trim the text in `t` to only `d` lines, assuming a width of `w`"""
-    if DEBUG:
+    if DEBUG and 0:
         pre_rendered_text = t.original_widget.original_widget.text
         lines = t.original_widget.original_widget.render((width-2,)).text
         # now make a new text widget to hold the remaining lines. It will
@@ -724,7 +737,7 @@ def render_text(text, K):
 #if too_high:
 #    IPython.embed(header="There were %d violations of max_height" % too_high)
 
-if DEBUG:
+if DEBUG and 0:
     for p in piles:
         print(h(p, K))
         for c in p.contents:

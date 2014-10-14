@@ -212,6 +212,9 @@ TODO
 [x] make kanten importable (refactor out the cli aspects to make testing easier)
 [ ] bug - height is exceeded in my piles (off by one?)
 [x] fix command line (ex mode)
+[x] fix empty search /<enter>
+[ ] make reading from stdin work again
+[ ] display "Pattern not found" when there are no matching search results
 
 
 TEST PLAN
