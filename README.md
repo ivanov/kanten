@@ -213,7 +213,7 @@ TODO
 [ ] bug - height is exceeded in my piles (off by one?)
 [x] fix command line (ex mode)
 [x] fix empty search /<enter>
-[ ] make reading from stdin work again
+[x] make reading from stdin work again
 [ ] display "Pattern not found" when there are no matching search results
 
 

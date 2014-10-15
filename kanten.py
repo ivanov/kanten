@@ -512,21 +512,22 @@ def read(fname):
     # XXX: implement buffering here, don't read the whole file / piped message
     global lexer
     if not sys.stdin.isatty():
-        text = read_from_pipe()
+        text,fname = read_from_pipe()
+        print('reading from a pipe')
+    else:
+        if fname == "__missing_file_name__":
+            sys.stderr.write('Missing filename ("kanten --help" for help)\n')
+            sys.exit(1)
+        with open(fname) as f:
+            text = f.read()
 
-    if fname == "__missing_file_name__":
-        sys.stderr.write('Missing filename ("kanten --help" for help)\n')
-        sys.exit(1)
-    with open(fname) as f:
-        text = f.read()
-
-    if have_pygments:
-        try:
-            lexer = pygments.lexers.get_lexer_for_filename(fname)
-        except pygments.util.ClassNotFound:
-            # TODO: if ipynb, treat it as json
-            # lexer = pygments.lexers.web.JsonLexer #XXX placeholder
-            lexer = pygments.lexers.TextLexer # null / noop lexer
+        if have_pygments:
+            try:
+                lexer = pygments.lexers.get_lexer_for_filename(fname)
+            except pygments.util.ClassNotFound:
+                # TODO: if ipynb, treat it as json
+                # lexer = pygments.lexers.web.JsonLexer #XXX placeholder
+                lexer = pygments.lexers.TextLexer # null / noop lexer
 
     return text
 
@@ -535,7 +536,7 @@ def read_from_pipe():
     global lexer
     text = sys.stdin.read()
     import os
-    sys.stdin.close()
+    #sys.stdin.close() # this avoids ValueError: I/O operation on closed file
     # reopen stdin now that we've read from the pipe
     sys.__stdin__ = sys.stdin = open('/dev/tty')
     os.dup2(sys.stdin.fileno(), 0)
@@ -550,7 +551,7 @@ def read_from_pipe():
         if lexer.name == "Prolog":
             lexer = pygments.lexers.TextLexer # null / noop lexer
 
-    return text
+    return text, fname
 
 
 def make_text(t, width):
