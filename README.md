@@ -215,7 +215,33 @@ TODO
 [x] fix empty search /<enter>
 [x] make reading from stdin work again
 [ ] display "Pattern not found" when there are no matching search results
-
+[ ] mouse clicking broken
+    Traceback (most recent call last):
+      File "/usr/local/bin/kanten", line 9, in <module>
+        load_entry_point('kanten==0.5.123', 'console_scripts', 'kanten')()
+      File "/Users/pi/code/kanten/kanten.py", line 106, in main
+        render_text(text, K)
+      File "/Users/pi/code/kanten/kanten.py", line 730, in render_text
+        K.loop.run()
+      File "/usr/local/lib/python2.7/site-packages/urwid/main_loop.py", line 274, in run
+        self.screen.run_wrapper(self._run)
+      File "/usr/local/lib/python2.7/site-packages/urwid/raw_display.py", line 268, in run_wrapper
+        return fn()
+      File "/usr/local/lib/python2.7/site-packages/urwid/main_loop.py", line 339, in _run
+        self.event_loop.run()
+      File "/usr/local/lib/python2.7/site-packages/urwid/main_loop.py", line 669, in run
+        self._loop()
+      File "/usr/local/lib/python2.7/site-packages/urwid/main_loop.py", line 706, in _loop
+        self._watch_files[fd]()
+      File "/usr/local/lib/python2.7/site-packages/urwid/main_loop.py", line 390, in _update
+        self.process_input(keys)
+      File "/usr/local/lib/python2.7/site-packages/urwid/main_loop.py", line 496, in process_input
+        something_handled |= bool(self.unhandled_input(k))
+      File "/usr/local/lib/python2.7/site-packages/urwid/main_loop.py", line 542, in unhandled_input
+        return self._unhandled_input(input)
+      File "/Users/pi/code/kanten/kanten.py", line 470, in show_or_exit
+        column = xpos_to_col(key[-2])
+    NameError: global name 'xpos_to_col' is not defined
 
 TEST PLAN
 ---------
