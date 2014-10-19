@@ -102,6 +102,7 @@ def main():
     if os.path.splitext(fname)[-1] in ('.diff', '.patch') or args.diff:
         K.kanten_options['filetype'] = 'diff'
 
+    # This text instance should become a LazyReader object
     text = read(fname)
     render_text(text, K)
 
@@ -513,7 +514,6 @@ def read(fname):
     global lexer
     if not sys.stdin.isatty():
         text,fname = read_from_pipe()
-        print('reading from a pipe')
     else:
         if fname == "__missing_file_name__":
             sys.stderr.write('Missing filename ("kanten --help" for help)\n')
@@ -616,7 +616,14 @@ def trim(t, d, w):
 def h(e, K):
     return e.rows((K.width,))
 
+def text_generator(text, k):
+    pass
+
+def first_paint(text, K):
+    pass
+
 def render_text(text, K):
+    # XXX: make this code lazy-reader reader-proxy aware
     txts = [make_text(t, K.width) for t in text.split('\n')]
     K.txts = txts
     piles = []
@@ -750,6 +757,27 @@ f = lambda t:t.original_widget.get_text()[1]
 g = lambda t:len(f(t))
 #print [f(t) for t in txts[:] if g(t)>0]
 
+class LazyReader(object):
+    def __init__(self, generator):
+        self.generator = generator
+        self.cached = []
+        self.not_finished = True
+
+    def __getitem__(self, i):
+        # XXX: idea: maybe index with a string to search for stuff?
+        if not (isinstance(i, int) or isinstance(i, long)):
+            raise TypeError("LazyReaders can only be indexed with integers")
+
+        if i < 0:
+            raise NotImplementedError("Negative indexing doesn't work yet")
+        
+        try:
+            while self.not_finished and len(self.cached) <= i:
+                self.cached.append(self.generator.next())
+        except StopIteration:
+            self.not_finished = False
+
+        return self.cached[i]
 
 if __name__ == '__main__':
     main()

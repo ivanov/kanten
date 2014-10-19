@@ -242,6 +242,7 @@ TODO
       File "/Users/pi/code/kanten/kanten.py", line 470, in show_or_exit
         column = xpos_to_col(key[-2])
     NameError: global name 'xpos_to_col' is not defined
+[ ] use collections.deque for the sliding window of visible piles
 
 TEST PLAN
 ---------
