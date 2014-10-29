@@ -86,7 +86,6 @@ def main():
     else:
         fname = args.filenames[0]
 
-    K.fname = fname
     kanten_default_options = dict(
         filetype='',
         number=False,
@@ -103,7 +102,8 @@ def main():
         K.kanten_options['filetype'] = 'diff'
 
     # This text instance should become a LazyReader object
-    text = read(fname)
+    text, fname = read(fname)
+    K.fname = fname
     render_text(text, K)
 
 def opt_name(name):
@@ -449,8 +449,8 @@ def show_or_exit(key):
         rehighlight(K.txts, '', search=search_noop)
     elif key in k_info:
         txt = K.fname
-        if kanten_options['filetype']:
-            txt += " (ft=" + kanten_options['filetype'] + ")"
+        if K.kanten_options['filetype']:
+            txt += " (ft=" + K.kanten_options['filetype'] + ")"
         txt += " (%d / %d)" % (K.total_cols-len(cols.contents) +
                 displayed_columns , K.total_cols)
         if len(cols.contents) == displayed_columns:
@@ -460,7 +460,7 @@ def show_or_exit(key):
         show = not show
         pbh.send(show)
     elif key in k_editor:
-        editor = kanten_options['editor']
+        editor = K.kanten_options['editor']
         os.spawnvp(os.P_WAIT, editor, [editor, K.fname])
     elif isinstance(key, tuple) and key[0] == "mouse press":
         if key[1] in  m_scroll_up:
@@ -529,7 +529,7 @@ def read(fname):
                 # lexer = pygments.lexers.web.JsonLexer #XXX placeholder
                 lexer = pygments.lexers.TextLexer # null / noop lexer
 
-    return text
+    return text, fname
 
 def read_from_pipe():
     # read from a pipe
@@ -692,7 +692,7 @@ def render_text(text, K):
 
     #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
     fill = urwid.Filler(cols, 'top', top=K.top_margin)
-    total_cols = len(cols.contents)
+    K.total_cols = len(cols.contents)
     col_widths = cols.column_widths(K.screen.get_cols_rows())
     K.displayed_columns = len( col_widths )
 
@@ -704,7 +704,7 @@ def render_text(text, K):
             if pos < (c + i * border):
                 return i
 
-    pbar = ProgressBar('pg normal', 'pg complete', K.displayed_columns, total_cols)
+    pbar = ProgressBar('pg normal', 'pg complete', K.displayed_columns, K.total_cols)
     K.pbar = pbar
 
 
