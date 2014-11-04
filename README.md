@@ -4,19 +4,27 @@ kanten
 the enlightened pager. less paging. more content. read widely.
 --------------------------------------------------------------
 
-...because you have more than 80 columns
+A multi-column pager for reading in the terminal ...because you have more than
+80 columns.
 
-Origin:
+Kanten was inspired by Amar Sagoo's [Tofu](http://amarsagoo.info/tofu/)
+for OS X. Tofu is a column-based reader application, where the columns are
+arranged horizontally.  Given the aspect ratio of computer monitors, I decided
+to create kanten to be a unix pager replacement (more and less) that is not
+limited to 80 columns.  Kanten is the Japanese for word for agar, a gelatinous
+substance derived from seaweed. The idea being that kanten is similar in
+substance to tofu, but has even less nutritional value.
 
-kan-ten: Japanese for word for agar, a gelatinous substance derived from seaweed.
+Here's how the above paragraph would be rendered by kanten on a short (7 line)
+terminal:
 
-A program for reading in the terminal. A pager for the early 90s?
-
-This program was inspired by a similar one called
-[Tofu](http://amarsagoo.info/tofu/) for OS X, a column-based reader application,
-where the columns are arranged horizontally.  Given the aspect ratio of computer
-monitors, I decided to create kanten to be a unix pager replacement (more and
-less) that is not limited to 80 columns.
+    Kanten was inspired by Amar Sagoo's          replacement (more and less) that is not               
+    [Tofu](http://amarsagoo.info/tofu/)          limited to 80 columns.  Kanten is the                 
+    for OS X. Tofu is a column-based reader      Japanese for word for agar, a gelatinous              
+    application, where the columns are           substance derived from seaweed. The idea              
+    arranged horizontally.  Given the aspect     being that kanten is similar in                       
+    ratio of computer monitors, I decided        substance to tofu, but has even less                  
+    to create kanten to be a unix pager          nutritional value.                                    
 
 TODO
 ----
@@ -35,6 +43,7 @@ TODO
 [ ] read buffering (don't read the whole file before filling in)
     - MUSTFIX for sane STDIN piping (e.g. git log | kanten)
     - urwid's edit.py has an example of lazy loading
+    - <*stream*> / <*stream(closed)*> reporting like w3m does
 [ ] mouse interactions broken in xterm after sleeping kanten - what gives?
     - can't click to select text in xterm
     - cannot select text even after sleeping kanten
@@ -243,6 +252,20 @@ TODO
         column = xpos_to_col(key[-2])
     NameError: global name 'xpos_to_col' is not defined
 [ ] use collections.deque for the sliding window of visible piles
+[ ] look up newspaper column width stuff - reading research lit on it?
+[ ] use constant memory - or at least add an option for that (page out columns)
+[ ] fix redirection of stdout
+    22:25@kanten(master)$ kanten demo  -w 40  -l 7 > hello
+    Traceback (most recent call last):
+      File "/usr/local/bin/kanten", line 9, in <module>
+        load_entry_point('kanten==0.5.123', 'console_scripts', 'kanten')()
+      File "/Users/pi/code/kanten/kanten.py", line 107, in main
+        render_text(text, K)
+      File "/Users/pi/code/kanten/kanten.py", line 710, in render_text
+        border = (K.max_width - c_columns[-1]) /  K.displayed_columns
+    IndexError: list index out of range
+[ ] show more than just the visible columns (new bug)
+[ ] padding - add more empty columns to fill the visible space
 
 TEST PLAN
 ---------
@@ -250,3 +273,46 @@ TEST PLAN
 [ ] / to search  (with highlighting)
 [ ] g / G to go to the beginning / end of the file
 [ ] ? to get help
+
+
+RELATED PROJECTS
+----------------
+
+### actively developed pagers
+
+[less](http://www.greenwoodsoftware.com/less/) - the de-facto pager released in
+1985, still actively developed 30 years later  (Mark Nudelman)
+
+[w3m](http://w3m.sourceforge.net/) - a text-based web browser that also works as
+a pager, that can even render and browse man pages as w3mman.  (Akinori Ito)
+
+[moar](https://github.com/walles/moar) -  syntax highlighting for code,
+incremental search, ANSI color escape support (Johan Walles)
+
+### historical
+
+[more](http://en.wikipedia.org/wiki/More_(command)) - venerable unix tool (Dan
+Halbert)
+
+[pg](http://en.wikipedia.org/wiki/Pg_(Unix)) - another old unix pager, you don't
+see it in newer systems anymore.
+
+[most](http://www.jedsoft.org/most/) - multiple windows, can scroll left and
+right. (John E Davis) (inactive, last release in 2007)
+
+
+### different application of related ideas
+
+[Tofu](http://amarsagoo.info/tofu/) - a multi-column reader for OS X. The
+inspiration for kanten. (Amar Sagoo)
+
+[Sidenote.io](http://sidenote.io) - column format structure for documents.
+
+[wtail](http://www.teaser.fr/~amajorel/wtail/) - tail -f on multiple files
+
+[multitail](http://www.vanheusden.com/multitail/) - tail -f on multiple files
+
+[mpage.vim](http://www.drchip.org/astronaut/vim/index.html#MPAGE) - same idea in
+vim. (Charles E Campbell)
+
+
