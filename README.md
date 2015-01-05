@@ -266,6 +266,7 @@ TODO
     IndexError: list index out of range
 [ ] show more than just the visible columns (new bug)
 [ ] padding - add more empty columns to fill the visible space
+[ ] have kanten respect LESS flags (like `export LESS=-Ri', for example)
 
 TEST PLAN
 ---------
