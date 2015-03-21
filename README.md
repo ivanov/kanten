@@ -287,6 +287,8 @@ TODO
 [ ] it's a struggle for how to think about K.idx
     - on the one hand - K.idx = 0 makes sense,
     - on the other hand - that makes it tricky for dealing with reaching the end
+[ ] don't read the whole file on startup - delay it
+    - verify via `make big` that the footprint isn't huge on startup
 
 
 TEST PLAN
