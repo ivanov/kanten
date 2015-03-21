@@ -123,7 +123,7 @@ TODO
 [ ] (maybe) reading cursor (like dictator?)
 [x] 'g' to go to the beginning 
     [ ] gg g0 g$ and other commands?
-[ ] implement number prefixes
+[ ] implement number prefixes for the commands
 [x] 'G' to go to the end
 [x] split boxes so that they partially fit
 [x] clip off lines that are too long even in one go
@@ -267,6 +267,20 @@ TODO
 [ ] show more than just the visible columns (new bug)
 [ ] padding - add more empty columns to fill the visible space
 [ ] have kanten respect LESS flags (like `export LESS=-Ri', for example)
+[x] BUG: kanten demo does not work to stay on the left most screen when pressing
+    spacebar - partially fixed this - but not completely. ok, fixed
+[ ] scroll for long contents
+[ ] better error message: this is too long:
+        Traceback (most recent call last):
+        File "/usr/local/bin/kanten", line 9, in <module>
+        load_entry_point('kanten==0.5.123', 'console_scripts', '
+        File "/Users/pi/code/kanten/kanten.py", line 107, in main
+        text, fname = read(fname)
+        File "/Users/pi/code/kanten/kanten.py", line 557, in read
+        with open(fname) as f:
+        IOError: [Errno 2] No such file or directory: 'kanten.'
+[ ] line numbering (:set nu)
+
 
 TEST PLAN
 ---------
@@ -274,7 +288,16 @@ TEST PLAN
 [ ] / to search  (with highlighting)
 [ ] g / G to go to the beginning / end of the file
 [ ] ? to get help
-
+[ ] short file (single column)
+[ ] medium file (exactly display_column width)
+[ ] a long file ( > display_column width)
+[ ] remove all 'offscreen' stuff?
+[ ] make a page generator, to make manual testing easier
+    for example: 
+    - runs urwid commands to get dimensions of the terminal
+    - generates a text file (or a buffer) that fills precisely one column
+    - that fits exactly as many columns as can fit.
+    - labels every page and every line on a page?
 
 RELATED PROJECTS
 ----------------
