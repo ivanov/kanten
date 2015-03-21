@@ -280,6 +280,13 @@ TODO
         with open(fname) as f:
         IOError: [Errno 2] No such file or directory: 'kanten.'
 [ ] line numbering (:set nu)
+[ ] horizontal progress bar is again not being updated.
+[ ] remove the global lexer - that's just fugly.
+[ ] oops - how about we don't explode the memory usage by inserting the contents
+    a hole bunch of times.
+[ ] it's a struggle for how to think about K.idx
+    - on the one hand - K.idx = 0 makes sense,
+    - on the other hand - that makes it tricky for dealing with reaching the end
 
 
 TEST PLAN

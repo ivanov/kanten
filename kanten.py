@@ -32,6 +32,8 @@ class Kanten(object):
     def max_width(self):
         return self.screen.get_cols_rows()[0]
 
+    idx = 0
+
 options_map = {
     'ft':'filetype',
     'nu':'number',
@@ -117,7 +119,7 @@ off_screen = []
 
 k_debug = ('ctrl k', 'backspace')
 k_next = (' ', 'f', 'z', 'l',  'ctrl f', 'ctrl v', 'right', 'down', 'page down')
-k_prev = ('b', 'B', 'w', 'ctrl b', 'left', 'up', 'page up')
+k_prev = ('b', 'B', 'w', 'ctrl b', 'left', 'up', 'page up', 'h')
 k_next_one = ('j', 'ctrl y')
 k_prev_one = ('k', 'ctrl e')
 k_top = ('g', '<', 'p', 'home')
@@ -133,7 +135,7 @@ k_submit = ('enter',)
 k_escape = ('esc',)
 k_quit = ('q', 'Q')
 # not sure if 'h' not being mapped to 'left' is a good idea
-k_help = ('h', 'H', 'f1') 
+k_help = ('h', 'H', 'f1', '?') 
 k_version = ('V',)
 k_diff = ('d',)     # enable diff highlighting
 k_diff_off = ('D',) # disable diff highlighting
@@ -361,39 +363,104 @@ def show_or_exit(key):
         return True
     elif key in k_prev_one:
         #off_screen.append(cols.contents.pop())
+        K.idx -= 1
         if off_screen:
             new_first = off_screen.pop()
             cols.contents.insert(0, new_first)
-            cols.focus_position=0
+            cols.focus_position = 0
+            K.idx -= 1
+        if K.idx < 0:
+            K.idx = 0
     elif key in k_prev:
         #off_screen.append(cols.contents.pop())
         for x in range(displayed_columns):
             if off_screen:
                 new_first = off_screen.pop()
                 cols.contents.insert(0, new_first)
-                cols.focus_position=0
+                cols.focus_position = 0
+        K.idx -= displayed_columns
+        if K.idx < 0:
+            K.idx = 0
     elif key in k_top:
         # take it from the top
-        cols.contents = off_screen + cols.contents
-        off_screen = []
-        cols.focus_position=0
+        #cols.contents = off_screen + cols.contents
+        #off_screen = []
+        K.idx = 0 
+        #cols.contents.pop(0);
+
+        # empty all contents
+        while len(cols.contents):
+            cols.contents.pop(0)
+
+        for x in range(displayed_columns):
+            next_pane = K.reader[K.idx + x]
+            #cols.contents.pop(0);
+            if next_pane:
+                cols.contents.insert(x, (next_pane, ('weight', 1, False)))
+            cols.focus_position = x
+        #cols.focus_position = 0
+        #cols.contents.focus= 0
+        #cols.render(True)
     elif key in k_end:
         # this is the end, my friends, the end, the end.
-        off_screen.extend(cols.contents)
-        # backfill here properly - fill the hole screen (add back as many columns as can be displayed)
-        cols.contents = [off_screen.pop() for x in range(displayed_columns) ][::-1]
+        K.idx = len(K.reader) - displayed_columns
+        show_or_exit(k_next[0])
+        #off_screen.extend(cols.contents)
+        ## backfill here properly - fill the hole screen (add back as many columns as can be displayed)
+        #cols.contents = [off_screen.pop() for x in range(displayed_columns) ][::-1]
+        ## XXX: finish this implementation
+        ## K.reader.exhaust()
         txt = '(END)'
     elif key in k_next_one:
-        if len(cols.contents) > displayed_columns:
-            off_screen.append(cols.contents.pop(0))
-        if len(cols.contents) == displayed_columns:
+        K.idx += 1
+        #if len(cols.contents) > displayed_columns:
+            #off_screen.append(cols.contents.pop(0))
+        next_pane = K.reader[K.idx + K.displayed_columns]
+        if next_pane:
+            #cols.contents.pop(0)
+            cols.contents.pop(0) # get rid of the front
+            cols.contents.insert(displayed_columns, (next_pane,('weight', 1, False)))
+            #cols.focus_position=displayed_columns
+        if K.reader.exhausted and K.idx >= len(K.reader):
             txt = '(END)'
+            K.idx = len(K.reader)
     elif key in k_next:
+        txt = 'nope'
+        # empty all contents
+
+        K.idx += displayed_columns
         for x in range(displayed_columns):
-            if len(cols.contents) > displayed_columns:
-                off_screen.append(cols.contents.pop(0))
-        if len(cols.contents) == displayed_columns:
-            txt = '(END)'
+            if len(cols.contents) < displayed_columns:
+                pass
+                #while len(cols.contents):
+                #cols.contents.pop(0)
+                #off_screen.append(cols.contents.pop(0))
+            #import IPython; IPython.embed()
+            # the tuple here I just got out of the contents, not sure if its
+            # the right thing to do, just trying to crawl along for now.
+            # Perhaps use some of the  MonitoredList callback stuff here.
+            next_pane = K.reader[K.idx + x]
+            if next_pane:
+                cols.contents.pop(0)
+                #length = len(K.reader) #if K.reader.exhausted else 0
+                txt = '(got one) K.idx=%d, len(K)=%d  len(contents)=%d' % (
+                        K.idx, len(K.reader), len(cols.contents)
+                    )
+                cols.contents.insert(x, (next_pane, ('weight', 1, False)))
+                #K.idx += 1
+                cols.focus_position=x
+            else:
+                break
+        #K.idx += x - 1
+        #K.idx += x
+        if K.reader.exhausted and K.idx >= len(K.reader):
+            #txt = '(EXHAUSTED)'
+            #K.idx = len(K.reader)
+            K.idx = len(K.reader)
+            txt = '(le tired) K.idx=%d, len(K)=%d  len(contents)=%d' % (
+                    K.idx, len(K.reader), len(cols.contents)
+                )
+            pass
     elif key in k_search:
         #cmd_line_text.focus()
         K.all.set_focus('footer')
@@ -462,32 +529,35 @@ def show_or_exit(key):
     elif key in k_editor:
         editor = K.kanten_options['editor']
         os.spawnvp(os.P_WAIT, editor, [editor, K.fname])
+        #K.idx += displayed_columns
     elif isinstance(key, tuple) and key[0] == "mouse press":
         if key[1] in  m_scroll_up:
             show_or_exit(k_next[0])
         elif key[1] in m_scroll_down: 
             show_or_exit(k_prev[0])
         elif key[1] in m_click: 
-            column = xpos_to_col(key[-2])
+            column = K.xpos_to_col(key[-2])
 
 
             txt = "click in column %d, line %d" % (column, key[-1])
         elif key[1] in m_paste:
             txt = "we would paste X11 clipboard contents here"
         else:
-            txt = "unhandled key " + str(key)
+            txt = "unhandled mouse key " + str(key)
     elif key in k_debug:
         if DEBUG:
-            IPython.embed_kernel()
+            IPython.embed()
     elif isinstance(key, tuple):
         txt = "unhandled key " + str(key)
     else:
         txt = "unhandled key " + str(key)
     if DEBUG:
+        key = 'space' if key == ' ' else key
         txt = "key = " + str(key)
+        txt += ' len(contents) = ' + str(len(cols.contents))
     K.cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
-    K.pbar.set_completion(len(off_screen)+displayed_columns)
+    #K.pbar.set_completion(len(off_screen)+displayed_columns)
     K.cmd_line_text.set_edit_text('') 
 
 show = True
@@ -516,8 +586,13 @@ def read(fname):
         text,fname = read_from_pipe()
     else:
         if fname == "__missing_file_name__":
-            sys.stderr.write('Missing filename ("kanten --help" for help)\n')
-            sys.exit(1)
+            if DEBUG:
+                fname = __file__
+            else:
+                # XXX: put back the usage in here - or ideally, move it up to
+                # the command-line argument processing.
+                sys.stderr.write('Missing filename ("kanten --help" for help)\n')
+                sys.exit(1)
         with open(fname) as f:
             text = f.read()
 
@@ -679,8 +754,20 @@ def render_text(text, K):
     #piles = urwid.ListBox(urwid.SimpleFocusListWalker(piles))
     #cols = piles
     #fill = cols
-    cols = urwid.Columns(piles, dividechars=1, min_width=K.width)
+    dc = K.max_width / K.width
+    while len(piles)  < int(dc):
+            
+        piles.append(Pile([]))
+    cols = urwid.Columns(piles[:dc], dividechars=1, min_width=K.width)
     K.cols = cols
+    col_widths = cols.column_widths(K.screen.get_cols_rows())
+    K.displayed_columns = len( col_widths )
+
+    def tmp_generator():
+        for x in piles:
+            yield urwid.Columns([x], dividechars=1, min_width=K.width)
+    K.reader = LazyReader(tmp_generator())
+
 
     # XXX: I need to subclass columns, and make it so the keypress function
     # "rolls" the piles under the hood, and re-renders all the widgets.
@@ -692,9 +779,7 @@ def render_text(text, K):
 
     #grid = urwid.GridFlow(txts, cell_width=20, h_sep=4, v_sep=0, align='left')
     fill = urwid.Filler(cols, 'top', top=K.top_margin)
-    K.total_cols = len(cols.contents)
-    col_widths = cols.column_widths(K.screen.get_cols_rows())
-    K.displayed_columns = len( col_widths )
+    K.total_cols = len(piles)
 
     # XXX: this is not the full story, it ignores the borders between columns
     c_columns = map(lambda i: sum(col_widths[:i+1]), range(K.displayed_columns))
@@ -704,6 +789,7 @@ def render_text(text, K):
             if pos < (c + i * border):
                 return i
 
+    K.xpos_to_col = xpos_to_col
     pbar = ProgressBar('pg normal', 'pg complete', K.displayed_columns, K.total_cols)
     K.pbar = pbar
 
@@ -761,23 +847,36 @@ class LazyReader(object):
     def __init__(self, generator):
         self.generator = generator
         self.cached = []
-        self.not_finished = True
+        self.exhausted = False
 
     def __getitem__(self, i):
         # XXX: idea: maybe index with a string to search for stuff?
-        if not (isinstance(i, int) or isinstance(i, long)):
+        if type(i) not in (int, long, slice):
             raise TypeError("LazyReaders can only be indexed with integers")
 
-        if i < 0:
-            raise NotImplementedError("Negative indexing doesn't work yet")
-        
         try:
-            while self.not_finished and len(self.cached) <= i:
+            while not self.exhausted and len(self.cached) <= i:
                 self.cached.append(self.generator.next())
         except StopIteration:
-            self.not_finished = False
+            self.exhausted = True
 
-        return self.cached[i]
+        try:
+            return self.cached[i]
+        except IndexError:
+            pass
+
+    def exhaust(self):
+        try:
+            while not self.exhausted:
+                self.cached.append(self.generator.next())
+        except StopIteration:
+            self.exhausted = True
+
+    def __len__(self):
+        return len(self.cached)
+        #self.exhaust()
+        #return len(self.cached)
+
 
 if __name__ == '__main__':
     main()
