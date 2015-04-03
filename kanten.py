@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-DEBUG = False
+DEBUG = True
 # debugging only
 if DEBUG:
     import IPython
@@ -22,7 +22,7 @@ try:
 except ImportError:
     have_pygments = False
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'
 
 class Kanten(object):
     def __init__(self, **kwargs):
@@ -121,11 +121,10 @@ def opt_name(name):
     else:
         return name
 
-off_screen = []
 
 k_debug = ('ctrl k', 'backspace')
-k_next = (' ', 'f', 'z', 'l',  'ctrl f', 'ctrl v', 'right', 'down', 'page down')
-k_prev = ('b', 'B', 'w', 'ctrl b', 'left', 'up', 'page up', 'h')
+k_next = (' ', 'f', 'z', 'l',  'ctrl f', 'ctrl v', 'right', 'down', 'page down', 'J')
+k_prev = ('b', 'B', 'w', 'ctrl b', 'left', 'up', 'page up', 'h', 'K')
 k_next_one = ('j', 'ctrl y')
 k_prev_one = ('k', 'ctrl e')
 k_top = ('g', '<', 'p', 'home')
@@ -339,7 +338,6 @@ def page_back():
 K = None
 
 def show_or_exit(key):
-    global off_screen
     global last_key
     global show
     global do_cmd
@@ -368,23 +366,28 @@ def show_or_exit(key):
         display_help()
         return True
     elif key in k_prev_one:
-        #off_screen.append(cols.contents.pop())
-        K.idx -= 1
-        if off_screen:
-            new_first = off_screen.pop()
-            cols.contents.insert(0, new_first)
-            cols.focus_position = 0
+        if K.idx > 0:
             K.idx -= 1
-        if K.idx < 0:
-            K.idx = 0
+            next_pane = K.reader[K.idx]
+            if next_pane:
+                cols.contents.pop() # get rid of the last one
+                cols.contents.insert(0, (next_pane,('weight', 1, False)))
+        else:
+            txt += '@ 0 '
+        txt += '(prev one)' + debug_line(K)
+        #if K.idx < 0:
+        #    K.idx = 0
     elif key in k_prev:
-        #off_screen.append(cols.contents.pop())
         for x in range(displayed_columns):
-            if off_screen:
-                new_first = off_screen.pop()
-                cols.contents.insert(0, new_first)
+            if K.idx > 0:
+                K.idx -= 1
+                next_pane = K.reader[K.idx]
+                if next_pane:
+                    cols.contents.pop() # get rid of the last one
+                    cols.contents.insert(0, (next_pane,('weight', 1, False)))
                 cols.focus_position = 0
-        K.idx -= displayed_columns
+        #K.idx -= displayed_columns
+        txt = '(prev)' + debug_line(K)
         if K.idx < 0:
             K.idx = 0
     elif key in k_top:
@@ -406,6 +409,7 @@ def show_or_exit(key):
             cols.focus_position = x
         #cols.focus_position = 0
         #cols.contents.focus= 0
+        txt = '(top)' + debug_line(K)
         #cols.render(True)
     elif key in k_end:
         # this is the end, my friends, the end, the end.
@@ -417,19 +421,20 @@ def show_or_exit(key):
         ## XXX: finish this implementation
         ## K.reader.exhaust()
         txt = '(END)'
+        txt += debug_line(K)
     elif key in k_next_one:
-        K.idx += 1
-        #if len(cols.contents) > displayed_columns:
-            #off_screen.append(cols.contents.pop(0))
-        next_pane = K.reader[K.idx + K.displayed_columns]
-        if next_pane:
-            #cols.contents.pop(0)
-            cols.contents.pop(0) # get rid of the front
-            cols.contents.insert(displayed_columns, (next_pane,('weight', 1, False)))
-            #cols.focus_position=displayed_columns
-        if K.reader.exhausted and K.idx >= len(K.reader):
+        if K.reader.exhausted and K.idx >= len(K.reader) - K.displayed_columns:
             txt = '(END)'
-            K.idx = len(K.reader)
+            K.idx = len(K.reader) - K.displayed_columns
+        else:
+            K.idx += 1
+            next_pane = K.reader[K.idx + K.displayed_columns]
+            if next_pane:
+                #cols.contents.pop(0)
+                cols.contents.pop(0) # get rid of the front
+                cols.contents.insert(displayed_columns, (next_pane,('weight', 1, False)))
+                #cols.focus_position=displayed_columns
+        txt += debug_line(K)
     elif key in k_next:
         txt = 'nope'
         # empty all contents
@@ -449,9 +454,7 @@ def show_or_exit(key):
             if next_pane:
                 cols.contents.pop(0)
                 #length = len(K.reader) #if K.reader.exhausted else 0
-                txt = '(got one) K.idx=%d, len(K)=%d  len(contents)=%d' % (
-                        K.idx, len(K.reader), len(cols.contents)
-                    )
+                txt = '(got one)' + debug_line(K)
                 cols.contents.insert(x, (next_pane, ('weight', 1, False)))
                 #K.idx += 1
                 cols.focus_position=x
@@ -463,9 +466,7 @@ def show_or_exit(key):
             #txt = '(EXHAUSTED)'
             #K.idx = len(K.reader)
             K.idx = len(K.reader)
-            txt = '(le tired) K.idx=%d, len(K)=%d  len(contents)=%d' % (
-                    K.idx, len(K.reader), len(cols.contents)
-                )
+            txt = '(le tired)' + debug_line(K)
             pass
     elif key in k_search:
         #cmd_line_text.focus()
@@ -559,7 +560,7 @@ def show_or_exit(key):
         txt = "unhandled key " + str(key)
     if DEBUG:
         key = 'space' if key == ' ' else key
-        txt = "key = " + str(key)
+        txt += "key = " + str(key)
         txt += ' len(contents) = ' + str(len(cols.contents))
     K.cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
@@ -760,9 +761,8 @@ def render_text(text, K):
     #piles = urwid.ListBox(urwid.SimpleFocusListWalker(piles))
     #cols = piles
     #fill = cols
-    dc = K.max_width / K.width
+    dc = int(K.max_width / K.width) # number of displayed columns
     while len(piles)  < int(dc):
-            
         piles.append(Pile([]))
     cols = urwid.Columns(piles[:dc], dividechars=1, min_width=K.width)
     K.cols = cols
@@ -883,6 +883,11 @@ class LazyReader(object):
         #self.exhaust()
         #return len(self.cached)
 
-
+def debug_line(K):
+    return 'K.idx=%d, len(K)=%d  len(contents)=%d' % (
+            K.idx,
+            len(K.reader),
+            len(K.cols.contents),
+        )
 if __name__ == '__main__':
     main()

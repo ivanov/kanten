@@ -290,6 +290,11 @@ TODO
 [ ] don't read the whole file on startup - delay it
     - verify via `make big` that the footprint isn't huge on startup
 [x] new flag `-c` `--columns` (complement to `--width`)
+[ ] last pane is getting extra crap in it
+[ ] 'k' kind of almost works - something is not being update
+[ ] eliminate all `off_screen` stuff
+[x] J and K are just like space and 
+[ ] keep track of real length (don't increment index past end - display columns)
 
 
 TEST PLAN
