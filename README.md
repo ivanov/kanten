@@ -211,7 +211,7 @@ TODO
    search parsing
 [ ] support set ignorecase? set smartcase?
 [ ] add saveas (to save STDIN input)
-[ ] center single column
+[ ] center single column?
 [ ] version string
     [ ] :version command
 [ ] corner cases when -t and -b \lim 0
@@ -265,7 +265,7 @@ TODO
         border = (K.max_width - c_columns[-1]) /  K.displayed_columns
     IndexError: list index out of range
 [ ] show more than just the visible columns (new bug)
-[ ] padding - add more empty columns to fill the visible space
+[x] padding - add more empty columns to fill the visible space
 [ ] have kanten respect LESS flags (like `export LESS=-Ri', for example)
 [x] BUG: kanten demo does not work to stay on the left most screen when pressing
     spacebar - partially fixed this - but not completely. ok, fixed
@@ -289,6 +289,7 @@ TODO
     - on the other hand - that makes it tricky for dealing with reaching the end
 [ ] don't read the whole file on startup - delay it
     - verify via `make big` that the footprint isn't huge on startup
+[x] new flag `-c` `--columns` (complement to `--width`)
 
 
 TEST PLAN
@@ -297,8 +298,9 @@ TEST PLAN
 [ ] / to search  (with highlighting)
 [ ] g / G to go to the beginning / end of the file
 [ ] ? to get help
-[ ] short file (single column)
+[x] short file (single column)
 [ ] medium file (exactly display_column width)
+    - requires getting some stuff right, or specifying width and height
 [ ] a long file ( > display_column width)
 [ ] remove all 'offscreen' stuff?
 [ ] make a page generator, to make manual testing easier

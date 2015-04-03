@@ -50,7 +50,10 @@ def main():
                        help='an integer for the accumulator')
     parser.add_argument( '-w','--width', dest='width', metavar='N', type=int,
                        default=80,
-                       help='the number of character in a column line')
+                       help='the number of characters in a column line')
+    parser.add_argument( '-c','--columns', dest='columns', metavar='N', type=int,
+                       default=0,
+                       help='the number of columns to display (overrides -w)')
     parser.add_argument( '-l','--height', '--lines', dest='height', metavar='N', type=int,
                        default='0',
                        help='the number of lines per column (0 for auto)')
@@ -81,6 +84,9 @@ def main():
 
     max_height = max_height- K.top - K.bottom
     K.height = min(max_height, K.height) if K.height > 0 else max_height
+    if args.columns > 0:
+        K.width = int(max_width / args.columns)
+
 
     if not args.filenames:
         # XXX: in the future this will be an explanation of how to use kanten

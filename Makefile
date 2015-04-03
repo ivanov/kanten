@@ -1,5 +1,12 @@
 test:
-	cat kanten.py | ./kanten.py
+	#cat short_file.txt | ./kanten.py
+	./kanten.py -c 10 short_file.txt
+	#./kanten.py -w 30 short_file.txt
+	#./kanten.py -w 30 short_file.txt
+	#cat kanten.py | ./kanten.py
+	./kanten.py kanten.py
+	./kanten.py -w 30 kanten.py
+	./kanten.py -c 10 -w 30 kanten.py
 	nosetests
 
 mem:
