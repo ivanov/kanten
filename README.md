@@ -295,6 +295,8 @@ TODO
 [ ] eliminate all `off_screen` stuff
 [x] J and K are just like space and 
 [ ] keep track of real length (don't increment index past end - display columns)
+[ ] clean up the reading of man pages- take out extra characters
+[ ] make line wrapping optional (useful for reviewing code, perhaps)
 
 
 TEST PLAN

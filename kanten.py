@@ -125,8 +125,8 @@ def opt_name(name):
 k_debug = ('ctrl k', 'backspace')
 k_next = (' ', 'f', 'z', 'l',  'ctrl f', 'ctrl v', 'right', 'down', 'page down', 'J')
 k_prev = ('b', 'B', 'w', 'ctrl b', 'left', 'up', 'page up', 'h', 'K')
-k_next_one = ('j', 'ctrl y')
-k_prev_one = ('k', 'ctrl e')
+k_next_one = ('j', 'ctrl y', 'ctrl d')
+k_prev_one = ('k', 'ctrl e', 'ctrl u')
 k_top = ('g', '<', 'p', 'home')
 k_end = ('G', '>', 'end')
 k_info = ('ctrl g', '=')
@@ -322,7 +322,7 @@ colon_dispatch_defaults = {
         's'     : search_replace,
         }
 colon_dispatch = defaultdict(lambda: cmd_not_found, colon_dispatch_defaults)
-        
+
 
 def colon(cmd):
     #c('would have run' + cmd)
@@ -826,7 +826,10 @@ def render_text(text, K):
     pbh.next()
 
 
-    K.loop.run()
+    try:
+        K.loop.run()
+    except KeyboardInterrupt:
+        pass
 
 #import IPython
 #too_high = 0
