@@ -4,7 +4,11 @@ from __future__ import print_function
 DEBUG = True
 # debugging only
 if DEBUG:
-    import IPython
+    try:
+        import IPython
+    except ImportError:
+        print("IPython necessary for debugging")
+        DEBUG = False
 
 import os
 import sys
