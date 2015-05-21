@@ -164,7 +164,7 @@ def help_egg():
     from struct import pack
     magic_number = 0x789ced92bf4ec33010c6773fc575ea52f51d40426a25a8d83abbf125364dce51ecb40a4fcf7776a940626361608892dc9feff3fdce3beec715ed49981da538f029ba65bbdd9addd3f3eb8a0e31d3db9c325959346376a8dfd012673a4bbc7e6d8cc21bf2481b73f42c485d6dd24ae97842050d73e3efffd95ba11c9d5d8c6a5c10522568dd9cd6a98851108d406b318f732635cd9e13135a13d989a92bcefbf5806456a3c47d4b36a57962670ee5946d1087920b5303e30e36c34283062d9e38b220348f2a4d2ec6299932290d4ca12de33656aa49cbdc07e9507615f3a0b2f8243b8e1337c1662ed527d692f58469dd5da9e3acb610c874b2cd99a214c3ae961da3ac73e91e7bb60933d577e530b0296e0a00227d689100e0cf79c029fa82f9862b99970551c718ceb1340c2e3c2440a78b9590bcb6a8bdb7ef5cd8ea169662a050725da28eabb2411237208a759deb126c46ba5c8e7207f4e07d3873c55c57eab01ab06823fafe22d0ff8b5ab97ec3baf92dd7cd0f1f31fa0fb5ec843e
     # yes it is! it's a magic number! 3-6-9, 12-15-18, 21-24-27, 30!
-    egg =  zip(*([iter(format(magic_number, 'x'))] * 2))
+    egg =  list(zip(*([iter(format(magic_number, 'x'))] * 2)))
     egg = pack('B'*(len(egg)), *[int(''.join(x), 16) for x in egg])
     try:
         import zlib
@@ -172,7 +172,7 @@ def help_egg():
         while True:
             yield "no zlib? I'm afraid no one can help you :\\"
     while True:
-        for m in zlib.decompress(egg).split('\n'):
+        for m in zlib.decompress(egg).decode('utf-8').split('\n'):
             yield m
 help = help_egg()
 
