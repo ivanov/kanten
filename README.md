@@ -1,6 +1,8 @@
 kanten
 ======
 
+[![Join the chat at https://gitter.im/ivanov/kanten](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ivanov/kanten?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 the enlightened pager. less paging. more content. read widely.
 --------------------------------------------------------------
 
