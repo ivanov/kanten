@@ -28,6 +28,8 @@ except ImportError:
 
 __version__ = '0.5.2'
 
+PY3 = (sys.version_info[0] >= 3)
+
 class Kanten(object):
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
@@ -183,7 +185,7 @@ def display_version(args=None):
     return True
 
 def display_help(args=None):
-    c(help.next())
+    c(next(help))
     #exit = urwid.BigText(('exit'," kanten v" + __version__), exit_font())
     exit = urwid.BigText(('exit'," kanten v" + str(__version__)), exit_font())
     #exit = urwid.Pile([exit, ])
@@ -695,7 +697,7 @@ def trim(t, d, w):
 
     # now make a new text widget to hold the remaining lines. It will
     # be added to the next pile, which we will also initialize here
-    next_start = pre_rendered_text.find(lines[d].strip())
+    next_start = pre_rendered_text.find(lines[d].strip().decode('utf-8'))
     t.original_widget.set_text(pre_rendered_text[:next_start])
     return make_text(pre_rendered_text[next_start:], w)
 
@@ -792,7 +794,7 @@ def render_text(text, K):
     K.total_cols = len(piles)
 
     # XXX: this is not the full story, it ignores the borders between columns
-    c_columns = map(lambda i: sum(col_widths[:i+1]), range(K.displayed_columns))
+    c_columns = [sum(col_widths[:i+1]) for i in  range(K.displayed_columns)]
     border = (K.max_width - c_columns[-1]) /  K.displayed_columns
     def xpos_to_col(pos):
         for i,c in enumerate(c_columns):
@@ -827,7 +829,7 @@ def render_text(text, K):
 
     pbh = progress_bar_handler(p)
     K.pbh = pbh
-    pbh.next()
+    next(pbh)
 
 
     try:
@@ -864,12 +866,12 @@ class LazyReader(object):
 
     def __getitem__(self, i):
         # XXX: idea: maybe index with a string to search for stuff?
-        if type(i) not in (int, long, slice):
+        if type(i) not in ((int, slice) + (() if PY3 else (long,))):
             raise TypeError("LazyReaders can only be indexed with integers")
 
         try:
             while not self.exhausted and len(self.cached) <= i:
-                self.cached.append(self.generator.next())
+                self.cached.append(next(self.generator))
         except StopIteration:
             self.exhausted = True
 
@@ -881,7 +883,7 @@ class LazyReader(object):
     def exhaust(self):
         try:
             while not self.exhausted:
-                self.cached.append(self.generator.next())
+                self.cached.append(next(self.generator))
         except StopIteration:
             self.exhausted = True
 
