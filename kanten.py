@@ -570,7 +570,7 @@ def show_or_exit(key):
         txt += ' len(contents) = ' + str(len(cols.contents))
     K.cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
-    #K.pbar.set_completion(len(off_screen)+displayed_columns)
+    K.pbar.set_completion(K.idx+displayed_columns)
     K.cmd_line_text.set_edit_text('') 
 
 show = True

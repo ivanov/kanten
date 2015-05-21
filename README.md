@@ -302,6 +302,7 @@ TODO
 [ ] keep track of real length (don't increment index past end - display columns)
 [ ] clean up the reading of man pages- take out extra characters
 [ ] make line wrapping optional (useful for reviewing code, perhaps)
+[ ] -q doesn't work the way it should - it should leave the rendered text 
 
 
 TEST PLAN
