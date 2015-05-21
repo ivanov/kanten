@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import io
+
 try:
     from setuptools import setup
     have_setuptools = True
@@ -40,6 +42,6 @@ if __name__ == '__main__':
         name='kanten',
         py_modules=['kanten'],
         entry_points={'console_scripts': ['kanten = kanten:main',],},
-        long_description=open('README.md').read(),
+        long_description=io.open('README.md', encoding='utf-8').read(),
         **setup_kwargs
         )
