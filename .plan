@@ -1,0 +1,11 @@
+At Python Project Night - May 20, 2015 - Eventbrite
+---------------------------------------------------
+
+- tests.
+  - get them passing on Travis
+- make release.
+  - make asciinema demo for kanten
+
+
+- @takluyver is going to make it work on python again
+  - map is lazy in python3
