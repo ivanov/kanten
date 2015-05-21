@@ -633,7 +633,10 @@ def read_from_pipe():
     if have_pygments:
         # since pygments' detection can be terrible, no point in giving it the
         # whole file.
-        lexer = pygments.lexers.guess_lexer(text[:80])
+        try:
+            lexer = pygments.lexers.guess_lexer(text[:80])
+        except pygments.lexers.ClassNotFound:
+            lexer = pygments.lexers.TextLexer
         # the lexer guesser sucks and will say anything it's confused about is
         # Prolog? No.
         if lexer.name == "Prolog":
