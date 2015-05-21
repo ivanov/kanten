@@ -1,5 +1,5 @@
 
-[kanten![](http://kant-en.org/images/kanten_small.png)](http://kant-en.org/)
+[![](http://kant-en.org/images/kanten_small.png)kanten![](http://kant-en.org/images/kanten_small.png)](http://kant-en.org/)
 ======
 
 [![Build Status](https://travis-ci.org/ivanov/kanten.svg?branch=master)](https://travis-ci.org/ivanov/kanten)
