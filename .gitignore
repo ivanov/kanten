@@ -5,3 +5,5 @@ __pycache__/
 /kanten.egg-info/
 /.tox
 *.egg-info
+/.coverage
+/htmlcov
