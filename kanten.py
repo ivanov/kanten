@@ -693,7 +693,7 @@ def trim(t, d, w):
 
     # now make a new text widget to hold the remaining lines. It will
     # be added to the next pile, which we will also initialize here
-    next_start = pre_rendered_text.find(lines[d].strip())
+    next_start = pre_rendered_text.find(lines[d].strip().decode('utf-8'))
     t.original_widget.set_text(pre_rendered_text[:next_start])
     return make_text(pre_rendered_text[next_start:], w)
 
