@@ -825,7 +825,7 @@ def render_text(text, K):
         set_cmd(("set ft=" + lexer.name.split()[0].lower()).split(), K)
 
     if K.args.quick:
-        K.loop.set_alarm_in(0, lambda x,y:  quit())
+        K.loop.set_alarm_in(1, lambda x,y:  quit())
 
     pbh = progress_bar_handler(p)
     K.pbh = pbh

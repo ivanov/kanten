@@ -7,6 +7,7 @@ test:
 	./kanten.py kanten.py
 	./kanten.py -w 30 kanten.py
 	./kanten.py -c 10 -w 30 kanten.py
+	./kanten.py -q kanten
 	nosetests
 
 mem:
