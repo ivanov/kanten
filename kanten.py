@@ -870,19 +870,24 @@ class LazyReader(object):
 
     def __getitem__(self, i):
         # XXX: idea: maybe index with a string to search for stuff?
-        if type(i) not in ((int, slice) + (() if PY3 else (long,))):
-            raise TypeError("LazyReaders can only be indexed with integers")
+        #if type(i) not in ((int, slice) + (() if PY3 else (long,))):
+        #    raise TypeError("LazyReaders can only be indexed with integers")
 
+        if isinstance(i, slice):
+            last = i.stop
+        else:
+            last = i
+
+        self.exhaust_until(last)
+
+        return self.cached[i]
+
+    def exhaust_until(self, i):
         try:
             while not self.exhausted and len(self.cached) <= i:
                 self.cached.append(next(self.generator))
         except StopIteration:
             self.exhausted = True
-
-        try:
-            return self.cached[i]
-        except IndexError:
-            pass
 
     def exhaust(self):
         try:
