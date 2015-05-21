@@ -171,9 +171,10 @@ def help_egg():
     except ImportError:
         while True:
             yield "no zlib? I'm afraid no one can help you :\\"
-    while True:
-        for m in zlib.decompress(egg).decode('utf-8').split('\n'):
-            yield m
+    else:
+        while True:
+            for m in zlib.decompress(egg).decode('utf-8').split('\n'):
+                yield m
 help = help_egg()
 
 exit_font = urwid.font.HalfBlock7x7Font
