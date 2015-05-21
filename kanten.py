@@ -268,7 +268,7 @@ def set_cmd(args, K):
                 arg = arg[2:]
                 negate = True
             arg = opt_name(arg)
-            val = kanten_options.get(arg, ' unknown option')
+            val = K.kanten_options.get(arg, ' unknown option')
             if val not in (True, False):
                 msg =  '  ' + arg+ '=' + str(val)
             else:
@@ -684,7 +684,7 @@ def trim(t, d, w):
     """Trim the text in `t` to only `d` lines, assuming a width of `w`"""
     if DEBUG and 0:
         pre_rendered_text = t.original_widget.original_widget.text
-        lines = t.original_widget.original_widget.render((width-2,)).text
+        lines = t.original_widget.original_widget.render((w-2,)).text
         # now make a new text widget to hold the remaining lines. It will
         # be added to the next pile, which we will also initialize here
         if d >= len(lines):
