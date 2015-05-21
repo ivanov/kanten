@@ -435,8 +435,11 @@ def show_or_exit(key):
             K.idx = len(K.reader) - K.displayed_columns
         else:
             K.idx += 1
-            next_pane = K.reader[K.idx + K.displayed_columns]
-            if next_pane:
+            try:
+                next_pane = K.reader[K.idx + K.displayed_columns]
+            except IndexError:
+                pass
+            else:
                 #cols.contents.pop(0)
                 cols.contents.pop(0) # get rid of the front
                 cols.contents.insert(displayed_columns, (next_pane,('weight', 1, False)))
@@ -453,20 +456,19 @@ def show_or_exit(key):
                 #while len(cols.contents):
                 #cols.contents.pop(0)
                 #off_screen.append(cols.contents.pop(0))
-            #import IPython; IPython.embed()
             # the tuple here I just got out of the contents, not sure if its
             # the right thing to do, just trying to crawl along for now.
             # Perhaps use some of the  MonitoredList callback stuff here.
-            next_pane = K.reader[K.idx + x]
-            if next_pane:
-                cols.contents.pop(0)
-                #length = len(K.reader) #if K.reader.exhausted else 0
-                txt = '(got one)' + debug_line(K)
-                cols.contents.insert(x, (next_pane, ('weight', 1, False)))
-                #K.idx += 1
-                cols.focus_position=x
-            else:
+            try:
+                next_pane = K.reader[K.idx + x]
+            except IndexError:
                 break
+            cols.contents.pop(0)
+            #length = len(K.reader) #if K.reader.exhausted else 0
+            txt = '(got one)' + debug_line(K)
+            cols.contents.insert(x, (next_pane, ('weight', 1, False)))
+            #K.idx += 1
+            cols.focus_position=x
         #K.idx += x - 1
         #K.idx += x
         if K.reader.exhausted and K.idx >= len(K.reader):
@@ -571,7 +573,7 @@ def show_or_exit(key):
         txt += ' len(contents) = ' + str(len(cols.contents))
     K.cmd_line_text.set_caption(txt)
     #cmd_line_text.set_edit_text(txt)
-    K.pbar.set_completion(K.idx+displayed_columns)
+    K.pbar.set_completion(K.idx+displayed_columns+1)
     K.cmd_line_text.set_edit_text('') 
 
 show = True
