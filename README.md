@@ -308,6 +308,7 @@ TODO
 [ ] allow user adjustable column spacing, along with column width
 [ ] bug: pressing 'l' when displaying just two columns swaps them (once)
 [x] exit when reading empty file (there's nothing to look at)
+[ ] start reading sooner to have noop kanten go through faster
 
 TEST PLAN
 ---------
