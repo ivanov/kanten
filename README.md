@@ -304,7 +304,9 @@ TODO
 [ ] clean up the reading of man pages- take out extra characters
 [ ] make line wrapping optional (useful for reviewing code, perhaps)
 [ ] -q doesn't work the way it should - it should leave the rendered text 
-
+[ ] allow line spacing (skip 1 2 or 3 lines)
+[ ] allow user adjustable column spacing, along with column width
+[ ] bug: pressing 'l' when displaying just two columns swaps them (once)
 
 TEST PLAN
 ---------
