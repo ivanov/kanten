@@ -117,6 +117,8 @@ def main():
 
     # This text instance should become a LazyReader object
     text, fname = read(fname)
+    if len(text) == 0:
+        sys.exit(0)
     K.fname = fname
     render_text(text, K)
 

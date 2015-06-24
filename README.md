@@ -307,6 +307,7 @@ TODO
 [ ] allow line spacing (skip 1 2 or 3 lines)
 [ ] allow user adjustable column spacing, along with column width
 [ ] bug: pressing 'l' when displaying just two columns swaps them (once)
+[x] exit when reading empty file (there's nothing to look at)
 
 TEST PLAN
 ---------
