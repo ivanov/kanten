@@ -758,7 +758,7 @@ def render_text(text, K):
 
 
     palette = [
-        (None,  'light gray', 'black'),
+        ('black',  'light gray', 'black'),
         ('heading', 'black', 'light gray'),
         ('important', 'black', 'light cyan'),
         ('line', 'black', 'light gray'),

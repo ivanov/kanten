@@ -304,12 +304,14 @@ TODO
 [ ] clean up the reading of man pages- take out extra characters
 [ ] make line wrapping optional (useful for reviewing code, perhaps)
 [ ] -q doesn't work the way it should - it should leave the rendered text 
+    - it should also be possible to leave whatever text is on the screen on
+      screen after quiting
 [ ] allow line spacing (skip 1 2 or 3 lines)
 [ ] allow user adjustable column spacing, along with column width
 [ ] bug: pressing 'l' when displaying just two columns swaps them (once)
 [x] exit when reading empty file (there's nothing to look at)
 [ ] start reading sooner to have noop kanten go through faster
-
+[ ] -S flag - don't wrap lines (like `less -S`)
 TEST PLAN
 ---------
 
